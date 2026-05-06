@@ -1,19 +1,39 @@
 {
-  "name": "test",
+  "name": "aurora-chat",
+  "productName": "Aurora Chat",
   "version": "1.0.0",
-  "description": "",
+  "description": "Une super application de messagerie",
   "main": "main.js",
+  "author": "Votre Pseudo",
   "scripts": {
-    "start": "electron ."
+    "start": "electron .",
+    "build": "electron-builder --win"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
   "dependencies": {
     "express": "^4.19.2",
-    "socket.io": "^4.7.5"
+    "socket.io": "^4.7.5",
+    "electron-updater": "^6.1.8"
   },
   "devDependencies": {
-    "electron": "^30.0.0"
+    "electron": "^30.0.0",
+    "electron-builder": "^24.13.3"
+  },
+  "build": {
+    "appId": "com.aurora.chat",
+    "publish": [
+      {
+        "provider": "github",
+        "owner": "collineaukazan-collab",
+        "repo": "aurora-chat-server"
+      }
+    ],
+    "win": {
+      "target": "nsis",
+      "icon": "icon.ico"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true
+    }
   }
 }

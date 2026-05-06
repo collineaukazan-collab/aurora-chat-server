@@ -1,37 +1,40 @@
-const express = require('express');
-const http = require('http');
-const { Server } = require('socket.io');
+const { app, BrowserWindow, dialog } = require('electron');
+const path = require('path');
+const { autoUpdater } = require('electron-updater');
 
-const app = express();
-const server = http.createServer(app);
-const io = new Server(server);
+function createWindow() {
+  const win = new BrowserWindow({
+    width: 1000,
+    height: 700,
+    autoHideMenuBar: true,
+    icon: path.join(__dirname, 'public/favicon.ico')
+  });
 
-app.use(express.static('public'));
+  // On se connecte DIRECTEMENT au serveur en ligne (Render)
+  win.loadURL('https://aurora-chat-server-1.onrender.com');
 
-// NOTRE MÉMOIRE : Un tableau qui va stocker l'historique des messages
-let chatHistory = [];
+  // Dès que l'application démarre, elle cherche s'il y a une mise à jour sur GitHub
+  autoUpdater.checkForUpdatesAndNotify();
+}
 
-io.on('connection', (socket) => {
-  console.log('Un utilisateur est connecté');
+app.whenReady().then(() => {
+  createWindow();
 
-  // Dès qu'un utilisateur se connecte, on lui envoie l'historique des messages
-  socket.emit('chat history', chatHistory);
-
-  // Quand le serveur reçoit un nouveau message
-  socket.on('chat message', (msg) => {
-    // 1. On l'ajoute à la mémoire
-    chatHistory.push(msg);
-    // On garde seulement les 100 derniers messages pour ne pas surcharger la mémoire
-    if (chatHistory.length > 100) {
-      chatHistory.shift();
-    }
-    // 2. On le renvoie à TOUS les utilisateurs connectés
-    io.emit('chat message', msg);
+  app.on('activate', () => {
+    if (BrowserWindow.getAllWindows().length === 0) createWindow();
   });
 });
 
-// IMPORTANT POUR RENDER : process.env.PORT permet à Render de choisir le bon port
-const PORT = process.env.PORT || 3000;
-server.listen(PORT, () => {
-  console.log(`Le serveur tourne sur le port ${PORT}`);
+app.on('window-all-closed', () => {
+  if (process.platform !== 'darwin') app.quit();
+});
+
+// --- ÉVÈNEMENTS DE MISE �� JOUR AUTOMATIQUE ---
+autoUpdater.on('update-available', () => {
+  console.log("Une mise à jour est disponible, téléchargement en cours...");
+});
+
+autoUpdater.on('update-downloaded', () => {
+  // Quand la mise à jour est téléchargée, l'application redémarre toute seule pour l'installer
+  autoUpdater.quitAndInstall();
 });

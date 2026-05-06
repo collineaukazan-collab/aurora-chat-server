@@ -4,36 +4,44 @@
     <meta charset="UTF-8">
     <title>Aurora Chat</title>
     <style>
-        body { font-family: 'Segoe UI', sans-serif; margin: 0; padding: 0; display: flex; height: 100vh; background-color: #36393f; color: #dcddde; overflow: hidden; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; padding: 0; display: flex; height: 100vh; background-color: #36393f; color: #dcddde; overflow: hidden; }
         
         /* Ecran de connexion */
         #login-screen { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-color: #36393f; display: flex; justify-content: center; align-items: center; z-index: 100; }
         .login-box { background-color: #2f3136; padding: 30px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.2); text-align: center; width: 300px; }
         .login-box h2 { color: white; margin-top: 0; }
-        .login-box input { width: 100%; padding: 10px; margin: 10px 0; border-radius: 4px; border: none; background-color: #202225; color: white; box-sizing: border-box; outline: none;}
+        .login-box input { width: 100%; padding: 10px; margin: 10px 0; border-radius: 4px; border: none; background-color: #202225; color: white; outline: none; }
         .login-box button { width: 100%; padding: 10px; background-color: #5865F2; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; }
         .login-box button:hover { background-color: #4752C4; }
 
         /* Interface principale */
         .servers { width: 72px; background-color: #202225; display: flex; flex-direction: column; align-items: center; padding-top: 10px; }
-        .server-icon { width: 48px; height: 48px; background-color: #36393f; border-radius: 50%; margin-bottom: 10px; display: flex; justify-content: center; align-items: center; cursor: pointer; font-weight: bold; transition: 0.2s; }
-        .server-icon:hover { border-radius: 15px; background-color: #5865F2; color: white; }
+        .server-icon { width: 48px; height: 48px; background-color: #5865F2; border-radius: 50%; margin-bottom: 10px; display: flex; justify-content: center; align-items: center; cursor: pointer; color: white; font-weight: bold; transition: 0.2s; }
+        .server-icon:hover { border-radius: 15px; }
         
         .channels { width: 240px; background-color: #2f3136; display: flex; flex-direction: column; }
-        .channels-header { padding: 15px; font-weight: bold; color: white; border-bottom: 1px solid #202225; }
+        .channels-header { padding: 15px; font-weight: bold; color: white; border-bottom: 1px solid #202225; box-shadow: 0 1px 2px rgba(0,0,0,0.2); }
         .channel-list { padding: 10px; flex-grow: 1; }
         .channel-item { padding: 8px; border-radius: 4px; cursor: pointer; color: #8e9297; margin-bottom: 2px;}
         .channel-item.active { background-color: #393c43; color: white; }
         
         .chat { flex-grow: 1; display: flex; flex-direction: column; background-color: #36393f; }
-        .chat-header { padding: 15px; border-bottom: 1px solid #202225; font-weight: bold; color: white;}
-        #messages { flex-grow: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 15px; }
-        .message { display: flex; gap: 15px; }
-        .avatar { width: 40px; height: 40px; background-color: #5865F2; border-radius: 50%; display: flex; justify-content: center; align-items: center; color: white; font-weight: bold; font-size: 18px; text-transform: uppercase;}
-        .msg-content { display: flex; flex-direction: column; }
-        .msg-author { font-weight: bold; color: white; margin-bottom: 4px; font-size: 15px;}
-        .msg-text { color: #dcddde; font-size: 14px; line-height: 1.4;}
+        .chat-header { padding: 15px; border-bottom: 1px solid #202225; font-weight: bold; color: white; box-shadow: 0 1px 2px rgba(0,0,0,0.2); }
         
+        #messages { flex-grow: 1; overflow-y: auto; display: flex; flex-direction: column; padding: 10px 0; }
+        .message { display: flex; gap: 15px; padding: 5px 20px; margin-top: 10px; }
+        .message:hover { background-color: #32353b; } /* Effet de survol Discord */
+        
+        .avatar { width: 40px; height: 40px; border-radius: 50%; display: flex; justify-content: center; align-items: center; color: white; font-weight: bold; font-size: 18px; flex-shrink: 0; }
+        .msg-content { display: flex; flex-direction: column; justify-content: center; }
+        .msg-header { display: flex; align-items: baseline; gap: 8px; margin-bottom: 4px; }
+        .msg-author { font-weight: bold; color: white; font-size: 15px;}
+        .msg-time { color: #72767d; font-size: 12px; }
+        .msg-text { color: #dcddde; font-size: 15px; line-height: 1.4; word-break: break-word; }
+        
+        /* Message système (connexion) */
+        .sys-msg { color: #8e9297; font-style: italic; padding: 5px 20px; font-size: 14px; text-align: center; }
+
         .input-area { padding: 0 20px 20px 20px; }
         #form { display: flex; background-color: #40444b; border-radius: 8px; padding: 12px; }
         #input { flex-grow: 1; background: transparent; border: none; color: white; outline: none; font-size: 15px; }
@@ -41,18 +49,16 @@
 </head>
 <body>
 
-    <!-- Ecran de connexion -->
     <div id="login-screen">
         <div class="login-box">
             <h2>Bienvenue sur Aurora</h2>
-            <input type="text" id="username-input" placeholder="Choisissez un pseudo..." autocomplete="off" />
-            <button id="join-btn">Rejoindre le serveur</button>
+            <input type="text" id="username-input" placeholder="Quel est votre pseudo ?" autocomplete="off" />
+            <button id="join-btn">Rejoindre</button>
         </div>
     </div>
 
-    <!-- Application principale -->
     <div class="servers">
-        <div class="server-icon" style="background-color: #5865F2; color: white;">A</div>
+        <div class="server-icon">A</div>
     </div>
     <div class="channels">
         <div class="channels-header">Serveur Aurora</div>
@@ -74,39 +80,62 @@
     <script>
         var socket = io();
         var currentUser = "Anonyme";
+        var userColor = "#5865F2"; 
 
-        // Gérer la connexion
+        // Génère une couleur aléatoire sympa pour l'avatar
+        function stringToColor(str) {
+            let hash = 0;
+            for (let i = 0; i < str.length; i++) hash = str.charCodeAt(i) + ((hash << 5) - hash);
+            return `hsl(${hash % 360}, 70%, 60%)`;
+        }
+
         document.getElementById('join-btn').addEventListener('click', () => {
             const pseudo = document.getElementById('username-input').value.trim();
             if (pseudo) {
                 currentUser = pseudo;
-                document.getElementById('login-screen').style.display = 'none'; // Cache l'écran de login
+                userColor = stringToColor(currentUser);
+                document.getElementById('login-screen').style.display = 'none';
+                
+                // On dit au serveur qu'on est là, il nous renverra l'historique
+                socket.emit('user joined', currentUser);
             }
+        });
+
+        // Permet de valider le pseudo avec la touche Entrée
+        document.getElementById('username-input').addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') document.getElementById('join-btn').click();
         });
 
         var form = document.getElementById('form');
         var input = document.getElementById('input');
         var messages = document.getElementById('messages');
 
-        // Fonction pour afficher un message à l'écran
         function displayMessage(msg) {
             var msgDiv = document.createElement('div');
-            msgDiv.className = 'message';
-            // La première lettre du pseudo pour l'avatar
-            var initial = msg.author.charAt(0);
             
-            msgDiv.innerHTML = `
-                <div class="avatar">${initial}</div>
-                <div class="msg-content">
-                    <span class="msg-author">${msg.author}</span>
-                    <span class="msg-text">${msg.text}</span>
-                </div>
-            `;
+            if (msg.system) {
+                msgDiv.className = 'sys-msg';
+                msgDiv.innerHTML = `${msg.time} - ${msg.text}`;
+            } else {
+                msgDiv.className = 'message';
+                var initial = msg.author.charAt(0).toUpperCase();
+                var color = stringToColor(msg.author);
+                
+                msgDiv.innerHTML = `
+                    <div class="avatar" style="background-color: ${color}">${initial}</div>
+                    <div class="msg-content">
+                        <div class="msg-header">
+                            <span class="msg-author">${msg.author}</span>
+                            <span class="msg-time">Aujourd'hui à ${msg.time || "..."}</span>
+                        </div>
+                        <span class="msg-text">${msg.text}</span>
+                    </div>
+                `;
+            }
             messages.appendChild(msgDiv);
             messages.scrollTop = messages.scrollHeight;
         }
 
-        // Envoyer un message
         form.addEventListener('submit', function(e) {
             e.preventDefault();
             if (input.value) {
@@ -115,13 +144,11 @@
             }
         });
 
-        // Recevoir l'historique lors de la connexion
         socket.on('chat history', function(history) {
-            messages.innerHTML = ''; // On vide au cas où
+            messages.innerHTML = ''; 
             history.forEach(msg => displayMessage(msg));
         });
 
-        // Recevoir un nouveau message
         socket.on('chat message', function(msg) {
             displayMessage(msg);
         });
