@@ -2,99 +2,128 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <title>Mon Mini Discord</title>
+    <title>Aurora Chat</title>
     <style>
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; padding: 0; display: flex; height: 100vh; background-color: #36393f; color: #dcddde; overflow: hidden; }
+        body { font-family: 'Segoe UI', sans-serif; margin: 0; padding: 0; display: flex; height: 100vh; background-color: #36393f; color: #dcddde; overflow: hidden; }
         
-        /* Barre des serveurs (tout à gauche) */
+        /* Ecran de connexion */
+        #login-screen { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-color: #36393f; display: flex; justify-content: center; align-items: center; z-index: 100; }
+        .login-box { background-color: #2f3136; padding: 30px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.2); text-align: center; width: 300px; }
+        .login-box h2 { color: white; margin-top: 0; }
+        .login-box input { width: 100%; padding: 10px; margin: 10px 0; border-radius: 4px; border: none; background-color: #202225; color: white; box-sizing: border-box; outline: none;}
+        .login-box button { width: 100%; padding: 10px; background-color: #5865F2; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; }
+        .login-box button:hover { background-color: #4752C4; }
+
+        /* Interface principale */
         .servers { width: 72px; background-color: #202225; display: flex; flex-direction: column; align-items: center; padding-top: 10px; }
-        .server-icon { width: 48px; height: 48px; background-color: #36393f; border-radius: 50%; margin-bottom: 10px; display: flex; justify-content: center; align-items: center; cursor: pointer; transition: 0.2s; }
+        .server-icon { width: 48px; height: 48px; background-color: #36393f; border-radius: 50%; margin-bottom: 10px; display: flex; justify-content: center; align-items: center; cursor: pointer; font-weight: bold; transition: 0.2s; }
         .server-icon:hover { border-radius: 15px; background-color: #5865F2; color: white; }
         
-        /* Barre des salons (à gauche) */
         .channels { width: 240px; background-color: #2f3136; display: flex; flex-direction: column; }
-        .channels-header { padding: 15px; font-weight: bold; border-bottom: 1px solid #202225; box-shadow: 0 1px 2px rgba(0,0,0,0.2); }
+        .channels-header { padding: 15px; font-weight: bold; color: white; border-bottom: 1px solid #202225; }
         .channel-list { padding: 10px; flex-grow: 1; }
-        .channel-item { padding: 8px; margin-bottom: 2px; border-radius: 4px; cursor: pointer; color: #8e9297; }
-        .channel-item:hover, .channel-item.active { background-color: #393c43; color: white; }
+        .channel-item { padding: 8px; border-radius: 4px; cursor: pointer; color: #8e9297; margin-bottom: 2px;}
+        .channel-item.active { background-color: #393c43; color: white; }
         
-        /* Zone de chat (au centre) */
         .chat { flex-grow: 1; display: flex; flex-direction: column; background-color: #36393f; }
-        .chat-header { padding: 15px; border-bottom: 1px solid #202225; font-weight: bold; box-shadow: 0 1px 2px rgba(0,0,0,0.2); }
+        .chat-header { padding: 15px; border-bottom: 1px solid #202225; font-weight: bold; color: white;}
         #messages { flex-grow: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 15px; }
         .message { display: flex; gap: 15px; }
-        .avatar { width: 40px; height: 40px; background-color: #5865F2; border-radius: 50%; }
+        .avatar { width: 40px; height: 40px; background-color: #5865F2; border-radius: 50%; display: flex; justify-content: center; align-items: center; color: white; font-weight: bold; font-size: 18px; text-transform: uppercase;}
         .msg-content { display: flex; flex-direction: column; }
-        .msg-author { font-weight: bold; color: white; margin-bottom: 4px; }
+        .msg-author { font-weight: bold; color: white; margin-bottom: 4px; font-size: 15px;}
+        .msg-text { color: #dcddde; font-size: 14px; line-height: 1.4;}
         
-        /* Zone de saisie */
         .input-area { padding: 0 20px 20px 20px; }
-        #form { display: flex; background-color: #40444b; border-radius: 8px; padding: 10px; }
+        #form { display: flex; background-color: #40444b; border-radius: 8px; padding: 12px; }
         #input { flex-grow: 1; background: transparent; border: none; color: white; outline: none; font-size: 15px; }
     </style>
 </head>
 <body>
 
-    <!-- Barre des serveurs -->
+    <!-- Ecran de connexion -->
+    <div id="login-screen">
+        <div class="login-box">
+            <h2>Bienvenue sur Aurora</h2>
+            <input type="text" id="username-input" placeholder="Choisissez un pseudo..." autocomplete="off" />
+            <button id="join-btn">Rejoindre le serveur</button>
+        </div>
+    </div>
+
+    <!-- Application principale -->
     <div class="servers">
-        <div class="server-icon" style="background-color: #5865F2; color: white;">M</div>
-        <div class="server-icon">+</div>
+        <div class="server-icon" style="background-color: #5865F2; color: white;">A</div>
     </div>
-
-    <!-- Barre des salons -->
     <div class="channels">
-        <div class="channels-header">Mon Serveur</div>
+        <div class="channels-header">Serveur Aurora</div>
         <div class="channel-list">
-            <div class="channel-item active"># général</div>
-            <div class="channel-item"># annonces</div>
+            <div class="channel-item active"># discussions</div>
         </div>
     </div>
-
-    <!-- Zone de discussion -->
     <div class="chat">
-        <div class="chat-header"># général</div>
-        <div id="messages">
-            <!-- Les messages apparaîtront ici -->
-        </div>
+        <div class="chat-header"># discussions</div>
+        <div id="messages"></div>
         <div class="input-area">
             <form id="form" action="">
-                <input id="input" autocomplete="off" placeholder="Envoyer un message dans #général" />
+                <input id="input" autocomplete="off" placeholder="Envoyer un message..." />
             </form>
         </div>
     </div>
 
     <script src="/socket.io/socket.io.js"></script>
     <script>
-        // On demande un pseudo à l'utilisateur quand il ouvre l'application
-        let pseudo = prompt("Choisissez votre pseudo :") || "Anonyme";
-
         var socket = io();
+        var currentUser = "Anonyme";
+
+        // Gérer la connexion
+        document.getElementById('join-btn').addEventListener('click', () => {
+            const pseudo = document.getElementById('username-input').value.trim();
+            if (pseudo) {
+                currentUser = pseudo;
+                document.getElementById('login-screen').style.display = 'none'; // Cache l'écran de login
+            }
+        });
+
         var form = document.getElementById('form');
         var input = document.getElementById('input');
         var messages = document.getElementById('messages');
 
-        form.addEventListener('submit', function(e) {
-            e.preventDefault();
-            if (input.value) {
-                // On envoie un objet contenant le pseudo et le message
-                socket.emit('chat message', { author: pseudo, text: input.value });
-                input.value = '';
-            }
-        });
-
-        socket.on('chat message', function(msg) {
-            // Création de l'affichage du message façon Discord
+        // Fonction pour afficher un message à l'écran
+        function displayMessage(msg) {
             var msgDiv = document.createElement('div');
             msgDiv.className = 'message';
+            // La première lettre du pseudo pour l'avatar
+            var initial = msg.author.charAt(0);
+            
             msgDiv.innerHTML = `
-                <div class="avatar"></div>
+                <div class="avatar">${initial}</div>
                 <div class="msg-content">
                     <span class="msg-author">${msg.author}</span>
-                    <span>${msg.text}</span>
+                    <span class="msg-text">${msg.text}</span>
                 </div>
             `;
             messages.appendChild(msgDiv);
             messages.scrollTop = messages.scrollHeight;
+        }
+
+        // Envoyer un message
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            if (input.value) {
+                socket.emit('chat message', { author: currentUser, text: input.value });
+                input.value = '';
+            }
+        });
+
+        // Recevoir l'historique lors de la connexion
+        socket.on('chat history', function(history) {
+            messages.innerHTML = ''; // On vide au cas où
+            history.forEach(msg => displayMessage(msg));
+        });
+
+        // Recevoir un nouveau message
+        socket.on('chat message', function(msg) {
+            displayMessage(msg);
         });
     </script>
 </body>

@@ -1,30 +1,37 @@
-const { app, BrowserWindow } = require('electron');
-const path = require('path');
+const express = require('express');
+const http = require('http');
+const { Server } = require('socket.io');
 
-// On lance votre serveur en arrière-plan
-require('./server.js');
+const app = express();
+const server = http.createServer(app);
+const io = new Server(server);
 
-function createWindow() {
-  // On crée la fenêtre de l'application
-  const win = new BrowserWindow({
-    width: 1000,
-    height: 700,
-    autoHideMenuBar: true, // Cache la barre de menu Windows (Fichier, Edition...)
-    icon: path.join(__dirname, 'public/favicon.ico') // Optionnel pour plus tard
-  });
+app.use(express.static('public'));
 
-  // On charge le serveur local dans cette fenêtre
-  win.loadURL('http://localhost:3000');
-}
+// NOTRE MÉMOIRE : Un tableau qui va stocker l'historique des messages
+let chatHistory = [];
 
-app.whenReady().then(() => {
-  createWindow();
+io.on('connection', (socket) => {
+  console.log('Un utilisateur est connecté');
 
-  app.on('activate', () => {
-    if (BrowserWindow.getAllWindows().length === 0) createWindow();
+  // Dès qu'un utilisateur se connecte, on lui envoie l'historique des messages
+  socket.emit('chat history', chatHistory);
+
+  // Quand le serveur reçoit un nouveau message
+  socket.on('chat message', (msg) => {
+    // 1. On l'ajoute à la mémoire
+    chatHistory.push(msg);
+    // On garde seulement les 100 derniers messages pour ne pas surcharger la mémoire
+    if (chatHistory.length > 100) {
+      chatHistory.shift();
+    }
+    // 2. On le renvoie à TOUS les utilisateurs connectés
+    io.emit('chat message', msg);
   });
 });
 
-app.on('window-all-closed', () => {
-  if (process.platform !== 'darwin') app.quit();
+// IMPORTANT POUR RENDER : process.env.PORT permet à Render de choisir le bon port
+const PORT = process.env.PORT || 3000;
+server.listen(PORT, () => {
+  console.log(`Le serveur tourne sur le port ${PORT}`);
 });
