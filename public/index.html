@@ -4,156 +4,383 @@
     <meta charset="UTF-8">
     <title>Aurora Chat</title>
     <style>
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; padding: 0; display: flex; height: 100vh; background-color: #36393f; color: #dcddde; overflow: hidden; }
-        
-        /* Ecran de connexion */
-        #login-screen { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-color: #36393f; display: flex; justify-content: center; align-items: center; z-index: 100; }
-        .login-box { background-color: #2f3136; padding: 30px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.2); text-align: center; width: 320px; }
-        .login-box h2 { color: white; margin-top: 0; margin-bottom: 20px;}
-        .login-box input { width: 100%; padding: 10px; margin: 10px 0; border-radius: 4px; border: none; background-color: #202225; color: white; outline: none; box-sizing: border-box;}
-        .login-box .hint { font-size: 12px; color: #72767d; margin-top: -5px; margin-bottom: 10px; text-align: left; }
-        .login-box button { width: 100%; padding: 10px; background-color: #5865F2; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; margin-top: 10px;}
-        .login-box button:hover { background-color: #4752C4; }
+        /* Couleurs officielles Discord */
+        :root {
+            --bg-tertiary: #1e1f22; /* Barre des serveurs */
+            --bg-secondary: #2b2d31; /* Barre latérale & Paramètres gauche */
+            --bg-primary: #313338; /* Chat & Paramètres droite */
+            --bg-message-hover: #2e3035;
+            --bg-modifier-hover: #35373c;
+            --text-normal: #dbdee1;
+            --text-muted: #80848e;
+            --text-link: #00a8fc;
+            --brand-experiment: #5865F2;
+            --brand-experiment-hover: #4752C4;
+            --red-danger: #da373c;
+            --red-danger-hover: #a12828;
+            --background-floating: #111214;
+            --profile-card: #232428;
+        }
 
-        /* Structure principale */
-        .servers { width: 72px; background-color: #202225; display: flex; flex-direction: column; align-items: center; padding-top: 10px; }
-        .server-icon { width: 48px; height: 48px; background-color: #5865F2; border-radius: 50%; margin-bottom: 10px; display: flex; justify-content: center; align-items: center; cursor: pointer; color: white; font-weight: bold; transition: 0.2s; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; padding: 0; display: flex; height: 100vh; background-color: var(--bg-primary); color: var(--text-normal); overflow: hidden; }
         
-        .channels { width: 240px; background-color: #2f3136; display: flex; flex-direction: column; }
-        .channels-header { padding: 15px; font-weight: bold; color: white; border-bottom: 1px solid #202225; box-shadow: 0 1px 2px rgba(0,0,0,0.2); }
-        .channel-list { padding: 10px; flex-grow: 1; }
-        .channel-item { padding: 8px; border-radius: 4px; cursor: pointer; color: #8e9297; margin-bottom: 2px;}
-        .channel-item.active { background-color: #393c43; color: white; }
-        
-        /* Panneau utilisateur (En bas à gauche) */
-        .user-panel { background-color: #292b2f; padding: 10px; display: flex; align-items: center; gap: 10px; border-top: 1px solid #202225; }
-        .user-panel .avatar { width: 32px; height: 32px; font-size: 14px; }
-        .user-info { flex-grow: 1; overflow: hidden; }
+        /* --- ECRAN DE CONNEXION --- */
+        #login-screen { position: absolute; inset: 0; background-color: var(--bg-primary); display: flex; justify-content: center; align-items: center; z-index: 2000; }
+        .login-box { background-color: var(--bg-secondary); padding: 32px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.2); width: 400px; text-align: center; }
+        .login-box h2 { color: white; margin-top: 0; margin-bottom: 8px; font-size: 24px;}
+        .login-box p { color: var(--text-muted); font-size: 14px; margin-bottom: 20px; }
+        .login-box input { width: 100%; padding: 10px; margin-bottom: 15px; border-radius: 4px; border: none; background-color: var(--bg-tertiary); color: white; outline: none; box-sizing: border-box; font-size: 14px; }
+        .login-box button { width: 100%; padding: 10px; background-color: var(--brand-experiment); color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; font-size: 14px; transition: 0.2s;}
+        .login-box button:hover { background-color: var(--brand-experiment-hover); }
+
+        /* --- APP PRINCIPALE --- */
+        /* Barre des serveurs */
+        .servers { width: 72px; background-color: var(--bg-tertiary); display: flex; flex-direction: column; align-items: center; padding-top: 12px; gap: 8px; z-index: 10; }
+        .server-icon { width: 48px; height: 48px; background-color: var(--bg-primary); border-radius: 50%; display: flex; justify-content: center; align-items: center; cursor: pointer; color: white; font-weight: bold; transition: 0.2s; }
+        .server-icon:hover, .server-icon.active { border-radius: 16px; background-color: var(--brand-experiment); }
+        .server-separator { width: 32px; height: 2px; background-color: var(--bg-modifier-hover); border-radius: 1px; }
+
+        /* Barre latérale (Salons/MP) */
+        .sidebar { width: 240px; background-color: var(--bg-secondary); display: flex; flex-direction: column; }
+        .search-bar-container { padding: 10px; box-shadow: 0 1px 2px rgba(0,0,0,0.2); }
+        .search-bar { width: 100%; background-color: var(--bg-tertiary); border: none; padding: 6px 10px; border-radius: 4px; color: var(--text-normal); outline: none; font-size: 13px; box-sizing: border-box;}
+        .channel-list { padding: 10px; flex-grow: 1; overflow-y: auto; }
+        .channel-category { color: var(--text-muted); font-size: 12px; font-weight: bold; text-transform: uppercase; margin: 15px 0 5px 5px; }
+        .channel-item { padding: 6px 8px; border-radius: 4px; cursor: pointer; color: var(--text-muted); display: flex; align-items: center; gap: 10px; margin-bottom: 2px;}
+        .channel-item:hover { background-color: var(--bg-modifier-hover); color: var(--text-normal); }
+        .channel-item.active { background-color: var(--bg-modifier-hover); color: white; }
+        .channel-avatar { width: 32px; height: 32px; border-radius: 50%; background-color: var(--bg-primary); }
+
+        /* Panneau utilisateur */
+        .user-panel { background-color: #232428; padding: 0 8px; height: 52px; display: flex; align-items: center; gap: 8px; }
+        .user-panel:hover { background-color: #2b2d31; }
+        .user-panel-avatar { width: 32px; height: 32px; border-radius: 50%; background-size: cover; background-position: center; cursor: pointer;}
+        .user-info { flex-grow: 1; overflow: hidden; cursor: pointer; }
         .user-info .username { color: white; font-weight: bold; font-size: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .user-info .status { color: #b9bbbe; font-size: 12px; }
-        .logout-btn { background: transparent; border: none; color: #b9bbbe; cursor: pointer; font-size: 18px; padding: 5px; border-radius: 4px; }
-        .logout-btn:hover { background-color: #36393f; color: #ed4245; }
+        .user-info .status { color: var(--text-muted); font-size: 12px; }
+        .btn-icon { background: transparent; border: none; color: var(--text-muted); cursor: pointer; font-size: 18px; padding: 5px; border-radius: 4px; transition: 0.2s;}
+        .btn-icon:hover { background-color: var(--bg-modifier-hover); color: var(--text-normal); }
 
-        /* Chat */
-        .chat { flex-grow: 1; display: flex; flex-direction: column; background-color: #36393f; }
-        .chat-header { padding: 15px; border-bottom: 1px solid #202225; font-weight: bold; color: white; box-shadow: 0 1px 2px rgba(0,0,0,0.2); }
-        
-        #messages { flex-grow: 1; overflow-y: auto; display: flex; flex-direction: column; padding: 10px 0; }
-        .message { display: flex; gap: 15px; padding: 5px 20px; margin-top: 10px; }
-        .message:hover { background-color: #32353b; }
-        
-        .avatar { width: 40px; height: 40px; border-radius: 50%; display: flex; justify-content: center; align-items: center; color: white; font-weight: bold; font-size: 18px; flex-shrink: 0; background-size: cover; background-position: center; }
-        .msg-content { display: flex; flex-direction: column; justify-content: center; }
+        /* Zone de Chat */
+        .chat { flex-grow: 1; display: flex; flex-direction: column; background-color: var(--bg-primary); position: relative;}
+        .chat-header { height: 48px; padding: 0 16px; border-bottom: 1px solid #1f2023; display: flex; align-items: center; font-weight: bold; color: white; gap: 10px; box-shadow: 0 1px 2px rgba(0,0,0,0.1);}
+        #messages { flex-grow: 1; overflow-y: auto; display: flex; flex-direction: column; padding: 16px 0; }
+        .message { display: flex; gap: 16px; padding: 2px 16px 2px 72px; position: relative; margin-top: 17px; }
+        .message:hover { background-color: var(--bg-message-hover); }
+        .msg-avatar { position: absolute; left: 16px; width: 40px; height: 40px; border-radius: 50%; background-size: cover; background-position: center; cursor: pointer;}
+        .msg-content { display: flex; flex-direction: column; }
         .msg-header { display: flex; align-items: baseline; gap: 8px; margin-bottom: 4px; }
-        .msg-author { font-weight: bold; color: white; font-size: 15px;}
-        .msg-time { color: #72767d; font-size: 12px; }
-        .msg-text { color: #dcddde; font-size: 15px; line-height: 1.4; word-break: break-word; }
-        
-        .sys-msg { color: #8e9297; font-style: italic; padding: 5px 20px; font-size: 14px; text-align: center; }
+        .msg-author { font-weight: 500; color: white; font-size: 16px; cursor: pointer;}
+        .msg-author:hover { text-decoration: underline; }
+        .msg-time { color: var(--text-muted); font-size: 12px; }
+        .msg-text { color: var(--text-normal); font-size: 15px; line-height: 1.375; word-break: break-word; }
+        .sys-msg { color: var(--text-muted); font-size: 14px; padding: 5px 16px; text-align: center; }
 
-        .input-area { padding: 0 20px 20px 20px; }
-        #form { display: flex; background-color: #40444b; border-radius: 8px; padding: 12px; }
-        #input { flex-grow: 1; background: transparent; border: none; color: white; outline: none; font-size: 15px; }
+        /* Input Zone */
+        .input-area { padding: 0 16px 24px 16px; }
+        .input-wrapper { display: flex; align-items: center; background-color: #383a40; border-radius: 8px; padding: 0 16px; min-height: 44px; }
+        .input-icon { color: #b5bac1; font-size: 20px; margin-right: 15px; cursor: pointer; }
+        #input { flex-grow: 1; background: transparent; border: none; color: var(--text-normal); outline: none; font-size: 16px; padding: 11px 0; }
+        
+        /* --- PARAMETRES (MON COMPTE) --- */
+        #settings-screen { position: absolute; inset: 0; background-color: var(--bg-primary); display: none; z-index: 1000; }
+        
+        .settings-sidebar { width: 30%; min-width: 250px; background-color: var(--bg-secondary); display: flex; justify-content: flex-end; padding-top: 60px; }
+        .settings-nav { width: 220px; padding: 0 20px 0 10px; }
+        .settings-category { color: var(--text-muted); font-size: 12px; font-weight: bold; text-transform: uppercase; margin: 15px 0 5px 10px; }
+        .settings-item { padding: 8px 10px; color: #b5bac1; border-radius: 4px; cursor: pointer; font-size: 15px; margin-bottom: 2px;}
+        .settings-item:hover { background-color: var(--bg-modifier-hover); color: var(--text-normal); }
+        .settings-item.active { background-color: var(--bg-modifier-hover); color: white; }
+        .settings-danger { color: var(--red-danger) !important; }
+        .settings-danger:hover { background-color: var(--red-danger) !important; color: white !important; }
+
+        .settings-content { width: 70%; padding: 60px 40px; overflow-y: auto; position: relative;}
+        .close-settings { position: absolute; top: 40px; right: 40px; width: 36px; height: 36px; border: 2px solid var(--text-muted); border-radius: 50%; display: flex; justify-content: center; align-items: center; color: var(--text-muted); cursor: pointer; font-size: 18px; transition: 0.2s;}
+        .close-settings:hover { background-color: var(--bg-modifier-hover); color: white; border-color: white;}
+        .close-hint { position: absolute; top: 80px; right: 40px; font-size: 12px; color: var(--text-muted); font-weight: bold;}
+
+        .settings-title { color: white; font-size: 20px; font-weight: bold; margin-bottom: 20px; }
+        
+        .profile-card { background-color: var(--profile-card); border-radius: 8px; overflow: hidden; margin-bottom: 40px; }
+        .profile-banner { height: 100px; background-color: #5865F2; }
+        .profile-header { padding: 16px; position: relative; display: flex; justify-content: space-between; align-items: flex-start; }
+        .profile-avatar-large { width: 80px; height: 80px; border-radius: 50%; border: 6px solid var(--profile-card); position: absolute; top: -45px; left: 16px; background-color: var(--bg-primary); background-size: cover; background-position: center;}
+        .profile-names { margin-top: 35px; margin-bottom: 20px;}
+        .profile-display-name { color: white; font-size: 20px; font-weight: bold; }
+        .profile-username { color: var(--text-normal); font-size: 14px; }
+        .btn-primary { background-color: var(--brand-experiment); color: white; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer; font-weight: 500; font-size: 14px;}
+        .btn-primary:hover { background-color: var(--brand-experiment-hover); }
+        .btn-danger { background-color: var(--red-danger); color: white; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer; font-weight: 500; font-size: 14px;}
+        .btn-danger:hover { background-color: var(--red-danger-hover); }
+
+        .info-list { background-color: var(--bg-primary); border-radius: 8px; padding: 16px; margin: 0 16px 16px 16px; }
+        .info-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; }
+        .info-row:last-child { margin-bottom: 0; }
+        .info-label { color: var(--text-muted); font-size: 12px; font-weight: bold; text-transform: uppercase; margin-bottom: 4px;}
+        .info-value { color: white; font-size: 16px; }
+        .btn-secondary { background-color: #4e5058; color: white; border: none; padding: 6px 16px; border-radius: 4px; cursor: pointer; font-size: 14px; transition: 0.2s;}
+        .btn-secondary:hover { background-color: #6d6f78; }
+
+        .section-title { color: white; font-size: 20px; font-weight: bold; margin-bottom: 20px; padding-bottom: 20px; border-bottom: 1px solid var(--bg-modifier-hover);}
+        .settings-desc { color: var(--text-normal); font-size: 14px; margin-bottom: 15px;}
     </style>
 </head>
 <body>
 
+    <!-- Écran de connexion (Login) -->
     <div id="login-screen">
         <div class="login-box">
-            <h2>Créer mon Profil</h2>
-            <input type="text" id="username-input" placeholder="Pseudo *" autocomplete="off" required />
-            <input type="text" id="avatar-input" placeholder="URL de l'image de profil (Optionnel)" autocomplete="off" />
-            <div class="hint">Astuce: Copiez l'adresse d'une image sur internet</div>
-            <button id="join-btn">Se connecter</button>
+            <h2>Te revoilà !</h2>
+            <p>Nous sommes si heureux de te revoir.</p>
+            <input type="text" id="login-username" placeholder="Nom d'utilisateur" autocomplete="off" required />
+            <input type="text" id="login-avatar" placeholder="URL de l'image de profil (Optionnel)" autocomplete="off" />
+            <button id="login-btn">Se connecter</button>
         </div>
     </div>
 
+    <!-- Interface Principale (Derrière les paramètres) -->
     <div class="servers">
-        <div class="server-icon">A</div>
+        <div class="server-icon active">A</div>
+        <div class="server-separator"></div>
+        <div class="server-icon" style="background-color: #313338; color: #23a559;">+</div>
     </div>
-    <div class="channels">
-        <div class="channels-header">Serveur Aurora</div>
-        <div class="channel-list">
-            <div class="channel-item active"># discussions</div>
+
+    <div class="sidebar">
+        <div class="search-bar-container">
+            <input type="text" class="search-bar" placeholder="Recherche ou lance une conversation" readonly>
         </div>
-        <!-- Panneau utilisateur en bas à gauche -->
+        <div class="channel-list">
+            <div class="channel-item active">
+                <span style="font-size: 20px; color: #80848e;">👋</span> Amis
+            </div>
+            <div class="channel-category">Messages privés</div>
+            <div class="channel-item">
+                <div class="channel-avatar" style="background-image: url('https://i.imgur.com/8Qj829B.png'); background-size: cover;"></div>
+                <div style="flex-grow: 1;">Xyliox</div>
+            </div>
+        </div>
+        
+        <!-- Panneau Utilisateur (En bas à gauche) -->
         <div class="user-panel">
-            <div class="avatar" id="my-avatar"></div>
+            <div class="user-panel-avatar" id="nav-avatar"></div>
             <div class="user-info">
-                <div class="username" id="my-username">Pseudo</div>
+                <div class="username" id="nav-username">Utilisateur</div>
                 <div class="status">En ligne</div>
             </div>
-            <button class="logout-btn" id="logout-btn" title="Déconnexion">⚙️</button>
+            <button class="btn-icon" title="Rendre muet">🎤</button>
+            <button class="btn-icon" title="Sourdine">🎧</button>
+            <button class="btn-icon" id="open-settings-btn" title="Paramètres utilisateur">⚙️</button>
         </div>
     </div>
+
     <div class="chat">
-        <div class="chat-header"># discussions</div>
-        <div id="messages"></div>
+        <div class="chat-header">
+            <span style="font-size: 24px; color: #80848e;">@</span> 
+            <span id="chat-title-name">Xyliox</span>
+        </div>
+        <div id="messages">
+            <!-- Les messages apparaîtront ici -->
+        </div>
         <div class="input-area">
-            <form id="form" action="">
-                <input id="input" autocomplete="off" placeholder="Envoyer un message..." />
-            </form>
+            <div class="input-wrapper">
+                <div class="input-icon">⊕</div>
+                <form id="form" action="" style="flex-grow: 1; display: flex;">
+                    <input id="input" autocomplete="off" placeholder="Envoyer un message..." />
+                </form>
+                <div class="input-icon" style="margin-left: 10px; margin-right: 5px;">🎁</div>
+                <div class="input-icon" style="margin-right: 5px;">GIF</div>
+                <div class="input-icon" style="margin-right: 0;">🙂</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- OVERYLAY DES PARAMÈTRES (MON COMPTE) -->
+    <div id="settings-screen">
+        <div class="settings-sidebar">
+            <div class="settings-nav">
+                <div class="settings-category">Paramètres utilisateur</div>
+                <div class="settings-item active">Mon compte</div>
+                <div class="settings-item">Profils</div>
+                <div class="settings-item">Confidentialité et sécurité</div>
+                <div class="settings-item">Appareils</div>
+                <div class="settings-item">Connexions</div>
+                
+                <div class="settings-category">Paramètres de l'appli</div>
+                <div class="settings-item">Apparence</div>
+                <div class="settings-item">Accessibilité</div>
+                <div class="settings-item">Voix & Vidéo</div>
+                
+                <div class="settings-category">Développeur</div>
+                <div class="settings-item settings-danger" id="logout-btn">Déconnexion</div>
+            </div>
+        </div>
+        
+        <div class="settings-content">
+            <div class="close-settings" id="close-settings-btn">✕</div>
+            <div class="close-hint">ÉCHAP</div>
+
+            <div class="settings-title">Mon compte</div>
+            
+            <div class="profile-card">
+                <div class="profile-banner"></div>
+                <div class="profile-header">
+                    <div class="profile-avatar-large" id="settings-avatar"></div>
+                    <button class="btn-primary" id="edit-profile-btn">Modifier profil d'utilisateur</button>
+                </div>
+                <div class="profile-names" style="padding: 0 16px;">
+                    <div class="profile-display-name" id="settings-display-name">Kazan</div>
+                    <div class="profile-username" id="settings-username">kazan_ciel</div>
+                </div>
+                
+                <div class="info-list">
+                    <div class="info-row">
+                        <div>
+                            <div class="info-label">Nom d'affichage</div>
+                            <div class="info-value" id="info-display-name">Kazan</div>
+                        </div>
+                        <button class="btn-secondary" onclick="updateInfo('display')">Modifier</button>
+                    </div>
+                    <div class="info-row">
+                        <div>
+                            <div class="info-label">Nom d'utilisateur</div>
+                            <div class="info-value" id="info-username">kazan_ciel</div>
+                        </div>
+                        <button class="btn-secondary" onclick="updateInfo('username')">Modifier</button>
+                    </div>
+                    <div class="info-row">
+                        <div>
+                            <div class="info-label">E-mail</div>
+                            <div class="info-value">***********@gmail.com <span style="color: var(--text-link); font-size: 14px; cursor:pointer;">Afficher</span></div>
+                        </div>
+                        <button class="btn-secondary">Modifier</button>
+                    </div>
+                    <div class="info-row">
+                        <div>
+                            <div class="info-label">Numéro de téléphone</div>
+                            <div class="info-value">********8668 <span style="color: var(--text-link); font-size: 14px; cursor:pointer;">Afficher</span></div>
+                        </div>
+                        <div>
+                            <span style="color: var(--text-normal); font-size: 14px; margin-right: 15px; cursor: pointer;">Supprimer</span>
+                            <button class="btn-secondary">Modifier</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section-title">Mot de passe et authentification</div>
+            <button class="btn-primary" style="margin-bottom: 25px;">Changer le mot de passe</button>
+            
+            <div style="margin-bottom: 10px; font-weight: bold; color: white;">Application d'authentification</div>
+            <div class="settings-desc">Protège ton compte avec une couche de sécurité supplémentaire.</div>
+            <button class="btn-primary" style="margin-bottom: 25px;">Activer l'application d'authentification</button>
+
+            <div class="section-title" style="margin-top: 40px;">Suppression du compte</div>
+            <div class="settings-desc">Désactiver ton compte signifie que tu pourras le récupérer à tout moment.</div>
+            <div style="display: flex; gap: 10px;">
+                <button class="btn-danger">Désactiver le compte</button>
+                <button class="btn-secondary" style="background-color: transparent; border: 1px solid var(--red-danger); color: var(--red-danger);">Supprimer le compte</button>
+            </div>
         </div>
     </div>
 
     <script src="/socket.io/socket.io.js"></script>
     <script>
         var socket = io();
-        var currentUser = { username: "", avatar: "", color: "" };
+        
+        // Le profil par défaut
+        var currentUser = { 
+            username: "Kazan", 
+            tag: "kazan_ciel",
+            avatar: "https://i.imgur.com/xO9Nmbj.png" // Image par défaut similaire à la capture
+        };
 
-        // Génère une couleur aléatoire
+        // Fonction pour générer des couleurs si pas d'avatar
         function stringToColor(str) {
-            let hash = 0;
-            for (let i = 0; i < str.length; i++) hash = str.charCodeAt(i) + ((hash << 5) - hash);
+            let hash = 0; for (let i = 0; i < str.length; i++) hash = str.charCodeAt(i) + ((hash << 5) - hash);
             return `hsl(${hash % 360}, 70%, 60%)`;
         }
 
-        // Fonction pour démarrer l'app avec un profil
+        // Met à jour toutes les interfaces visuelles avec les données du profil
+        function refreshUI() {
+            // Panneau nav
+            document.getElementById('nav-username').textContent = currentUser.username;
+            document.getElementById('nav-avatar').style.backgroundImage = currentUser.avatar ? `url('${currentUser.avatar}')` : 'none';
+            document.getElementById('nav-avatar').style.backgroundColor = currentUser.avatar ? 'transparent' : stringToColor(currentUser.username);
+            
+            // Page paramètres
+            document.getElementById('settings-display-name').textContent = currentUser.username;
+            document.getElementById('settings-username').textContent = currentUser.tag;
+            document.getElementById('info-display-name').textContent = currentUser.username;
+            document.getElementById('info-username').textContent = currentUser.tag;
+            document.getElementById('settings-avatar').style.backgroundImage = currentUser.avatar ? `url('${currentUser.avatar}')` : 'none';
+            document.getElementById('settings-avatar').style.backgroundColor = currentUser.avatar ? 'transparent' : stringToColor(currentUser.username);
+            
+            // Sauvegarde
+            localStorage.setItem('discord_profile', JSON.stringify(currentUser));
+        }
+
+        // Démarrage et connexion
         function loginUser(username, avatarUrl) {
             currentUser.username = username;
+            currentUser.tag = username.toLowerCase() + "_" + Math.floor(Math.random() * 1000);
             currentUser.avatar = avatarUrl;
-            currentUser.color = stringToColor(username);
-
-            // Sauvegarde locale sur le PC
-            localStorage.setItem('aurora_profile', JSON.stringify(currentUser));
-
-            // Mise à jour de l'UI du panneau utilisateur
-            document.getElementById('my-username').textContent = username;
-            const myAvatarEl = document.getElementById('my-avatar');
-            if (avatarUrl) {
-                myAvatarEl.style.backgroundImage = `url('${avatarUrl}')`;
-                myAvatarEl.textContent = "";
-            } else {
-                myAvatarEl.style.backgroundColor = currentUser.color;
-                myAvatarEl.textContent = username.charAt(0).toUpperCase();
-            }
-
+            
+            refreshUI();
             document.getElementById('login-screen').style.display = 'none';
             socket.emit('user joined', currentUser);
         }
 
-        // Vérifie si on a déjà un compte sauvegardé sur ce PC
-        const savedProfile = localStorage.getItem('aurora_profile');
+        // Vérification du profil existant
+        const savedProfile = localStorage.getItem('discord_profile');
         if (savedProfile) {
-            const parsed = JSON.parse(savedProfile);
-            loginUser(parsed.username, parsed.avatar);
+            currentUser = JSON.parse(savedProfile);
+            refreshUI();
+            document.getElementById('login-screen').style.display = 'none';
+            socket.emit('user joined', currentUser);
         }
 
-        // Bouton de connexion
-        document.getElementById('join-btn').addEventListener('click', () => {
-            const pseudo = document.getElementById('username-input').value.trim();
-            const avatar = document.getElementById('avatar-input').value.trim();
-            if (pseudo) {
-                loginUser(pseudo, avatar);
+        // Boutons Login et Logout
+        document.getElementById('login-btn').addEventListener('click', () => {
+            const pseudo = document.getElementById('login-username').value.trim();
+            const avatar = document.getElementById('login-avatar').value.trim();
+            if (pseudo) loginUser(pseudo, avatar);
+        });
+
+        document.getElementById('logout-btn').addEventListener('click', () => {
+            localStorage.removeItem('discord_profile');
+            location.reload();
+        });
+
+        // Gestion de l'affichage des Paramètres
+        const settingsScreen = document.getElementById('settings-screen');
+        document.getElementById('open-settings-btn').addEventListener('click', () => {
+            settingsScreen.style.display = 'flex';
+        });
+        document.getElementById('close-settings-btn').addEventListener('click', () => {
+            settingsScreen.style.display = 'none';
+        });
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && settingsScreen.style.display === 'flex') {
+                settingsScreen.style.display = 'none';
             }
         });
 
-        // Bouton déconnexion (efface la mémoire)
-        document.getElementById('logout-btn').addEventListener('click', () => {
-            localStorage.removeItem('aurora_profile');
-            location.reload(); // Recharge la page
+        // Modification factice depuis les paramètres
+        function updateInfo(type) {
+            if(type === 'display') {
+                const newName = prompt("Entrez votre nouveau Nom d'affichage :", currentUser.username);
+                if(newName) { currentUser.username = newName; refreshUI(); }
+            } else if (type === 'username') {
+                const newTag = prompt("Entrez votre nouveau Nom d'utilisateur (tag) :", currentUser.tag);
+                if(newTag) { currentUser.tag = newTag; refreshUI(); }
+            }
+        }
+        document.getElementById('edit-profile-btn').addEventListener('click', () => {
+            const newAvatar = prompt("Entrez l'URL de votre nouvelle image de profil (laissez vide pour supprimer) :");
+            if(newAvatar !== null) { currentUser.avatar = newAvatar; refreshUI(); }
         });
 
+        // Gestion des Messages
         var form = document.getElementById('form');
         var input = document.getElementById('input');
         var messages = document.getElementById('messages');
@@ -163,22 +390,13 @@
             
             if (msg.system) {
                 msgDiv.className = 'sys-msg';
-                msgDiv.innerHTML = `${msg.time} - ${msg.text}`;
+                msgDiv.innerHTML = `${msg.text}`;
             } else {
                 msgDiv.className = 'message';
-                
-                // Gestion de l'avatar
-                let avatarHTML = "";
-                if (msg.avatar) {
-                    avatarHTML = `<div class="avatar" style="background-image: url('${msg.avatar}')"></div>`;
-                } else {
-                    let color = stringToColor(msg.author);
-                    let initial = msg.author.charAt(0).toUpperCase();
-                    avatarHTML = `<div class="avatar" style="background-color: ${color}">${initial}</div>`;
-                }
+                let avatarStyle = msg.avatar ? `background-image: url('${msg.avatar}')` : `background-color: ${stringToColor(msg.author)}`;
                 
                 msgDiv.innerHTML = `
-                    ${avatarHTML}
+                    <div class="msg-avatar" style="${avatarStyle}"></div>
                     <div class="msg-content">
                         <div class="msg-header">
                             <span class="msg-author">${msg.author}</span>
