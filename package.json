@@ -1,7 +1,7 @@
 {
   "name": "aurora-chat",
   "productName": "Aurora Chat",
-  "version": "1.0.0",
+  "version": "1.0.2",
   "description": "Une super application de messagerie",
   "main": "main.js",
   "author": "Votre Pseudo",

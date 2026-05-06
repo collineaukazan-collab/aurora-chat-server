@@ -8,16 +8,16 @@
         
         /* Ecran de connexion */
         #login-screen { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-color: #36393f; display: flex; justify-content: center; align-items: center; z-index: 100; }
-        .login-box { background-color: #2f3136; padding: 30px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.2); text-align: center; width: 300px; }
-        .login-box h2 { color: white; margin-top: 0; }
-        .login-box input { width: 100%; padding: 10px; margin: 10px 0; border-radius: 4px; border: none; background-color: #202225; color: white; outline: none; }
-        .login-box button { width: 100%; padding: 10px; background-color: #5865F2; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; }
+        .login-box { background-color: #2f3136; padding: 30px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.2); text-align: center; width: 320px; }
+        .login-box h2 { color: white; margin-top: 0; margin-bottom: 20px;}
+        .login-box input { width: 100%; padding: 10px; margin: 10px 0; border-radius: 4px; border: none; background-color: #202225; color: white; outline: none; box-sizing: border-box;}
+        .login-box .hint { font-size: 12px; color: #72767d; margin-top: -5px; margin-bottom: 10px; text-align: left; }
+        .login-box button { width: 100%; padding: 10px; background-color: #5865F2; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; margin-top: 10px;}
         .login-box button:hover { background-color: #4752C4; }
 
-        /* Interface principale */
+        /* Structure principale */
         .servers { width: 72px; background-color: #202225; display: flex; flex-direction: column; align-items: center; padding-top: 10px; }
         .server-icon { width: 48px; height: 48px; background-color: #5865F2; border-radius: 50%; margin-bottom: 10px; display: flex; justify-content: center; align-items: center; cursor: pointer; color: white; font-weight: bold; transition: 0.2s; }
-        .server-icon:hover { border-radius: 15px; }
         
         .channels { width: 240px; background-color: #2f3136; display: flex; flex-direction: column; }
         .channels-header { padding: 15px; font-weight: bold; color: white; border-bottom: 1px solid #202225; box-shadow: 0 1px 2px rgba(0,0,0,0.2); }
@@ -25,21 +25,30 @@
         .channel-item { padding: 8px; border-radius: 4px; cursor: pointer; color: #8e9297; margin-bottom: 2px;}
         .channel-item.active { background-color: #393c43; color: white; }
         
+        /* Panneau utilisateur (En bas à gauche) */
+        .user-panel { background-color: #292b2f; padding: 10px; display: flex; align-items: center; gap: 10px; border-top: 1px solid #202225; }
+        .user-panel .avatar { width: 32px; height: 32px; font-size: 14px; }
+        .user-info { flex-grow: 1; overflow: hidden; }
+        .user-info .username { color: white; font-weight: bold; font-size: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .user-info .status { color: #b9bbbe; font-size: 12px; }
+        .logout-btn { background: transparent; border: none; color: #b9bbbe; cursor: pointer; font-size: 18px; padding: 5px; border-radius: 4px; }
+        .logout-btn:hover { background-color: #36393f; color: #ed4245; }
+
+        /* Chat */
         .chat { flex-grow: 1; display: flex; flex-direction: column; background-color: #36393f; }
         .chat-header { padding: 15px; border-bottom: 1px solid #202225; font-weight: bold; color: white; box-shadow: 0 1px 2px rgba(0,0,0,0.2); }
         
         #messages { flex-grow: 1; overflow-y: auto; display: flex; flex-direction: column; padding: 10px 0; }
         .message { display: flex; gap: 15px; padding: 5px 20px; margin-top: 10px; }
-        .message:hover { background-color: #32353b; } /* Effet de survol Discord */
+        .message:hover { background-color: #32353b; }
         
-        .avatar { width: 40px; height: 40px; border-radius: 50%; display: flex; justify-content: center; align-items: center; color: white; font-weight: bold; font-size: 18px; flex-shrink: 0; }
+        .avatar { width: 40px; height: 40px; border-radius: 50%; display: flex; justify-content: center; align-items: center; color: white; font-weight: bold; font-size: 18px; flex-shrink: 0; background-size: cover; background-position: center; }
         .msg-content { display: flex; flex-direction: column; justify-content: center; }
         .msg-header { display: flex; align-items: baseline; gap: 8px; margin-bottom: 4px; }
         .msg-author { font-weight: bold; color: white; font-size: 15px;}
         .msg-time { color: #72767d; font-size: 12px; }
         .msg-text { color: #dcddde; font-size: 15px; line-height: 1.4; word-break: break-word; }
         
-        /* Message système (connexion) */
         .sys-msg { color: #8e9297; font-style: italic; padding: 5px 20px; font-size: 14px; text-align: center; }
 
         .input-area { padding: 0 20px 20px 20px; }
@@ -51,9 +60,11 @@
 
     <div id="login-screen">
         <div class="login-box">
-            <h2>Bienvenue sur Aurora</h2>
-            <input type="text" id="username-input" placeholder="Quel est votre pseudo ?" autocomplete="off" />
-            <button id="join-btn">Rejoindre</button>
+            <h2>Créer mon Profil</h2>
+            <input type="text" id="username-input" placeholder="Pseudo *" autocomplete="off" required />
+            <input type="text" id="avatar-input" placeholder="URL de l'image de profil (Optionnel)" autocomplete="off" />
+            <div class="hint">Astuce: Copiez l'adresse d'une image sur internet</div>
+            <button id="join-btn">Se connecter</button>
         </div>
     </div>
 
@@ -64,6 +75,15 @@
         <div class="channels-header">Serveur Aurora</div>
         <div class="channel-list">
             <div class="channel-item active"># discussions</div>
+        </div>
+        <!-- Panneau utilisateur en bas à gauche -->
+        <div class="user-panel">
+            <div class="avatar" id="my-avatar"></div>
+            <div class="user-info">
+                <div class="username" id="my-username">Pseudo</div>
+                <div class="status">En ligne</div>
+            </div>
+            <button class="logout-btn" id="logout-btn" title="Déconnexion">⚙️</button>
         </div>
     </div>
     <div class="chat">
@@ -79,31 +99,59 @@
     <script src="/socket.io/socket.io.js"></script>
     <script>
         var socket = io();
-        var currentUser = "Anonyme";
-        var userColor = "#5865F2"; 
+        var currentUser = { username: "", avatar: "", color: "" };
 
-        // Génère une couleur aléatoire sympa pour l'avatar
+        // Génère une couleur aléatoire
         function stringToColor(str) {
             let hash = 0;
             for (let i = 0; i < str.length; i++) hash = str.charCodeAt(i) + ((hash << 5) - hash);
             return `hsl(${hash % 360}, 70%, 60%)`;
         }
 
+        // Fonction pour démarrer l'app avec un profil
+        function loginUser(username, avatarUrl) {
+            currentUser.username = username;
+            currentUser.avatar = avatarUrl;
+            currentUser.color = stringToColor(username);
+
+            // Sauvegarde locale sur le PC
+            localStorage.setItem('aurora_profile', JSON.stringify(currentUser));
+
+            // Mise à jour de l'UI du panneau utilisateur
+            document.getElementById('my-username').textContent = username;
+            const myAvatarEl = document.getElementById('my-avatar');
+            if (avatarUrl) {
+                myAvatarEl.style.backgroundImage = `url('${avatarUrl}')`;
+                myAvatarEl.textContent = "";
+            } else {
+                myAvatarEl.style.backgroundColor = currentUser.color;
+                myAvatarEl.textContent = username.charAt(0).toUpperCase();
+            }
+
+            document.getElementById('login-screen').style.display = 'none';
+            socket.emit('user joined', currentUser);
+        }
+
+        // Vérifie si on a déjà un compte sauvegardé sur ce PC
+        const savedProfile = localStorage.getItem('aurora_profile');
+        if (savedProfile) {
+            const parsed = JSON.parse(savedProfile);
+            loginUser(parsed.username, parsed.avatar);
+        }
+
+        // Bouton de connexion
         document.getElementById('join-btn').addEventListener('click', () => {
             const pseudo = document.getElementById('username-input').value.trim();
+            const avatar = document.getElementById('avatar-input').value.trim();
             if (pseudo) {
-                currentUser = pseudo;
-                userColor = stringToColor(currentUser);
-                document.getElementById('login-screen').style.display = 'none';
-                
-                // On dit au serveur qu'on est là, il nous renverra l'historique
-                socket.emit('user joined', currentUser);
+                loginUser(pseudo, avatar);
             }
         });
 
-        // Permet de valider le pseudo avec la touche Entrée
-        document.getElementById('username-input').addEventListener('keypress', function (e) {
-            if (e.key === 'Enter') document.getElementById('join-btn').click();
+        // Bouton déconnexion (efface la mémoire)
+        document.getElementById('logout-btn').addEventListener('click', () => {
+            localStorage.removeItem('aurora_profile');
+            location.reload(); // Recharge la page
         });
 
         var form = document.getElementById('form');
@@ -118,11 +166,19 @@
                 msgDiv.innerHTML = `${msg.time} - ${msg.text}`;
             } else {
                 msgDiv.className = 'message';
-                var initial = msg.author.charAt(0).toUpperCase();
-                var color = stringToColor(msg.author);
+                
+                // Gestion de l'avatar
+                let avatarHTML = "";
+                if (msg.avatar) {
+                    avatarHTML = `<div class="avatar" style="background-image: url('${msg.avatar}')"></div>`;
+                } else {
+                    let color = stringToColor(msg.author);
+                    let initial = msg.author.charAt(0).toUpperCase();
+                    avatarHTML = `<div class="avatar" style="background-color: ${color}">${initial}</div>`;
+                }
                 
                 msgDiv.innerHTML = `
-                    <div class="avatar" style="background-color: ${color}">${initial}</div>
+                    ${avatarHTML}
                     <div class="msg-content">
                         <div class="msg-header">
                             <span class="msg-author">${msg.author}</span>
@@ -139,7 +195,11 @@
         form.addEventListener('submit', function(e) {
             e.preventDefault();
             if (input.value) {
-                socket.emit('chat message', { author: currentUser, text: input.value });
+                socket.emit('chat message', { 
+                    author: currentUser.username, 
+                    avatar: currentUser.avatar,
+                    text: input.value 
+                });
                 input.value = '';
             }
         });

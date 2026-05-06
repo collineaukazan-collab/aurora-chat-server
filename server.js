@@ -11,26 +11,20 @@ app.use(express.static('public'));
 let chatHistory = [];
 
 io.on('connection', (socket) => {
-  // Quand l'utilisateur a rentré son pseudo
-  socket.on('user joined', (username) => {
-    // 1. On lui envoie l'historique
+  socket.on('user joined', (userData) => {
     socket.emit('chat history', chatHistory);
-    // 2. On annonce son arrivée
     io.emit('chat message', { 
       author: "Système", 
-      text: `👋 ${username} a rejoint le salon !`, 
+      text: `👋 ${userData.username} a glissé dans le serveur !`, 
       time: new Date().toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' }),
       system: true 
     });
   });
 
   socket.on('chat message', (msg) => {
-    // On ajoute l'heure au message
     msg.time = new Date().toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
-    
     chatHistory.push(msg);
-    if (chatHistory.length > 200) chatHistory.shift(); // Garde les 200 derniers
-    
+    if (chatHistory.length > 200) chatHistory.shift();
     io.emit('chat message', msg);
   });
 });
