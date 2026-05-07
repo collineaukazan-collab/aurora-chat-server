@@ -58,13 +58,19 @@
         #messages { flex-grow: 1; overflow-y: auto; padding: 20px 0; }
         .message { display: flex; gap: 16px; padding: 6px 20px 6px 80px; position: relative; margin-top: 17px; }
         .message:hover { background-color: var(--bg-message-hover); }
-        .msg-content { display: flex; flex-direction: column; }
+        .msg-content { display: flex; flex-direction: column; width: 100%; }
         .msg-header { display: flex; gap: 10px; margin-bottom: 4px; align-items: baseline;}
         .msg-author { font-weight: 600; color: white; font-size: 16px; cursor: pointer;}
         .msg-author:hover { text-decoration: underline; }
         .msg-time { color: var(--text-muted); font-size: 12px; font-weight: 500;}
         .msg-text { color: var(--text-normal); font-size: 15px; line-height: 1.5;}
         
+        /* ✏️ CSS ACTIONS MESSAGES (EDIT/DELETE) */
+        .msg-actions { display: none; position: absolute; right: 20px; top: -10px; background: var(--bg-secondary); border-radius: 6px; padding: 4px; border: 1px solid rgba(255,255,255,0.05); box-shadow: 0 4px 10px rgba(0,0,0,0.3);}
+        .message:hover .msg-actions { display: flex; gap: 4px; }
+        .msg-action-btn { background: transparent; border: none; color: var(--text-muted); cursor: pointer; font-size: 14px; padding: 6px; border-radius: 4px; transition: 0.2s;}
+        .msg-action-btn:hover { background: var(--bg-modifier-hover); color: white; }
+
         .chat-image { max-width: 350px; max-height: 350px; border-radius: 8px; margin-top: 8px; cursor: pointer; border: 1px solid rgba(255,255,255,0.1); transition: 0.2s;}
         .chat-image:hover { opacity: 0.9; box-shadow: 0 4px 12px rgba(0,0,0,0.5);}
         .msg-text strong { color: white; font-weight: 700; } .msg-text em { font-style: italic; } .msg-text code { background-color: #1e1f22; padding: 2px 6px; border-radius: 4px; font-family: Consolas, monospace; font-size: 13px; border: 1px solid rgba(255,255,255,0.05); color: #e5e5e5;}
@@ -79,7 +85,6 @@
         .input-wrapper { display: flex; align-items: center; background-color: #383a40; border-radius: 12px; padding: 0 10px; min-height: 50px; gap: 5px;}
         #input { flex-grow: 1; background: transparent; border: none; color: white; outline: none; font-size: 15px; padding: 15px 10px; font-family: 'Inter', sans-serif;}
         
-        /* 📹 NOUVEAU : INTERFACE D'APPEL VIDÉO/ÉCRAN */
         #video-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 4000; display: none; flex-direction: column; align-items: center; justify-content: center; backdrop-filter: blur(10px); }
         .video-main { position: relative; width: 85%; height: 75%; display: flex; justify-content: center; align-items: center; background: #000; border-radius: 16px; overflow: hidden; box-shadow: 0 15px 40px rgba(0,0,0,0.6); }
         #remote-video { width: 100%; height: 100%; object-fit: contain; }
@@ -87,13 +92,10 @@
         .call-controls { display: flex; gap: 15px; margin-top: 25px; background: rgba(43,45,49,0.8); padding: 15px 25px; border-radius: 16px; border: 1px solid rgba(255,255,255,0.05); }
         .btn-call-action { padding: 12px 20px; border-radius: 10px; border: none; color: white; font-weight: 700; font-size: 15px; cursor: pointer; transition: 0.2s; font-family: 'Inter', sans-serif; display: flex; align-items: center; gap: 8px;}
         .btn-call-action:hover { transform: translateY(-2px); }
-        .btn-cam-on { background: var(--brand-experiment); }
-        .btn-cam-off { background: var(--red-danger); }
-        .btn-screen { background: var(--yellow-idle); color: #000; }
+        .btn-cam-on { background: var(--brand-experiment); } .btn-cam-off { background: var(--red-danger); } .btn-screen { background: var(--yellow-idle); color: #000; }
         
         #call-modal { position: absolute; top: 20px; right: 20px; background: var(--profile-card); padding: 20px; border-radius: 12px; box-shadow: 0 8px 30px rgba(0,0,0,0.6); z-index: 5000; display: none; border: 1px solid rgba(255,255,255,0.05); }
         
-        /* PARAMÈTRES */
         #settings-screen { position: absolute; inset: 0; background-color: var(--bg-primary); display: none; flex-direction: row; z-index: 6000; }
         .settings-sidebar { width: 35%; background-color: var(--bg-secondary); display: flex; justify-content: flex-end; padding-top: 80px; }
         .settings-nav { width: 240px; padding: 0 20px; }
@@ -141,8 +143,12 @@
     
     <div class="sidebar">
         <div class="channel-list">
-            <div class="channel-category">Général</div>
-            <div class="channel-item active" id="btn-room-general" onclick="switchRoom('general')"># discussions</div>
+            <!-- 📚 PACK B : NOUVEAUX SALONS TEXTUELS -->
+            <div class="channel-category">Salons Publics</div>
+            <div class="channel-item active" id="btn-room-general" onclick="switchRoom('general', 'discussions')"># discussions</div>
+            <div class="channel-item" id="btn-room-gaming" onclick="switchRoom('gaming', 'gaming 🎮')"># gaming 🎮</div>
+            <div class="channel-item" id="btn-room-musique" onclick="switchRoom('musique', 'musique 🎵')"># musique 🎵</div>
+            
             <div class="channel-category" style="margin-top: 25px;">Amis en ligne</div>
             <div id="online-users-list"></div>
         </div>
@@ -161,7 +167,6 @@
     <div class="chat">
         <div class="chat-header">
             <div id="chat-title">🌐 # discussions</div>
-            <!-- 📞 BOUTONS D'APPEL MODERNES -->
             <div style="display:flex; gap:10px;" id="call-buttons-container">
                 <button class="call-btn" onclick="startCall(false)">📞 Vocal</button>
                 <button class="call-btn" style="background-color: var(--brand-experiment); border-color:transparent;" onclick="startCall(true)">📹 Vidéo</button>
@@ -178,14 +183,8 @@
         </div>
     </div>
 
-    <!-- 🎥 NOUVELLE INTERFACE DE STREAMING -->
     <div id="video-overlay">
-        <div class="video-main">
-            <!-- La vidéo de l'ami ou son écran -->
-            <video id="remote-video" autoplay playsinline></video>
-            <!-- Ta propre vidéo/webcam en bas à droite -->
-            <video id="local-video" autoplay playsinline muted></video>
-        </div>
+        <div class="video-main"><video id="remote-video" autoplay playsinline></video><video id="local-video" autoplay playsinline muted></video></div>
         <div class="call-controls">
             <button class="btn-call-action btn-cam-on" id="btn-toggle-mic" onclick="toggleMic()">🎤 Micro Actif</button>
             <button class="btn-call-action btn-cam-on" id="btn-toggle-cam" onclick="toggleCam()">📹 Caméra Active</button>
@@ -194,7 +193,6 @@
         </div>
     </div>
 
-    <!-- NOTIFICATION D'APPEL ENTRANT -->
     <div id="call-modal">
         <div id="call-modal-text" style="color:white; font-weight:800; margin-bottom:15px; font-size: 18px;">📞 Appel entrant...</div>
         <div style="display:flex; gap:10px;"><button class="btn-primary" style="background-color:var(--green-success);" onclick="acceptCall()">Répondre</button><button class="btn-primary" style="background-color:var(--red-danger);" onclick="rejectCall()">Ignorer</button></div>
@@ -210,10 +208,8 @@
                 <div class="settings-item" id="logout-btn" style="color:var(--red-danger);">Déconnexion</div>
             </div>
         </div>
-        
         <div class="settings-content active" id="tab-compte">
-            <div class="close-settings" onclick="closeSettings()">✕</div>
-            <h2 style="color: white; margin-top:0; font-size:28px; font-weight:800;">Mon compte</h2>
+            <div class="close-settings" onclick="closeSettings()">✕</div><h2 style="color: white; margin-top:0; font-size:28px; font-weight:800;">Mon compte</h2>
             <div class="profile-card">
                 <div class="profile-banner"></div>
                 <div class="profile-header"><div class="profile-avatar-large" id="settings-avatar"></div><label for="avatar-upload" class="btn-primary" style="cursor:pointer; line-height:20px;">Changer d'avatar</label><input type="file" id="avatar-upload" accept="image/*" style="display:none;"></div>
@@ -225,29 +221,17 @@
                 </div>
             </div>
         </div>
-
-        <div class="settings-content" id="tab-apparence">
-            <div class="close-settings" onclick="closeSettings()">✕</div>
-            <h2 style="color: white; margin-top:0; font-size:28px; font-weight:800;">Apparence</h2>
-            <div style="background:var(--profile-card); padding:24px; border-radius:12px;"><div style="color:white; font-weight:700; margin-bottom:8px;">Couleur du Thème</div><input type="color" id="theme-color-picker" value="#5865F2"><button class="btn-primary" style="margin-top:20px; display:block;" onclick="saveTheme()">Appliquer le thème</button></div>
-        </div>
-
-        <div class="settings-content" id="tab-notifs">
-            <div class="close-settings" onclick="closeSettings()">✕</div>
-            <h2 style="color: white; margin-top:0; font-size:28px; font-weight:800;">Notifications</h2>
-            <div style="background:var(--profile-card); border-radius:12px; padding: 24px;">
-                <div class="info-row" style="margin-bottom: 24px;"><div><div style="color:white; font-weight:700;">Notifications Sonores</div><div style="color:var(--text-muted); font-size:14px;">Joue un petit son quand tu reçois un message.</div></div><input type="checkbox" id="toggle-sound" checked onchange="saveAppPrefs()" style="width:24px; height:24px; cursor:pointer;"></div>
-                <div style="height:1px; background:rgba(255,255,255,0.05); margin-bottom:24px;"></div>
-                <div class="info-row" style="margin-bottom: 0;"><div><div style="color:white; font-weight:700;">Notifications Bureau Windows</div><div style="color:var(--text-muted); font-size:14px;">Affiche une bulle en bas à droite de l'écran.</div></div><input type="checkbox" id="toggle-desktop" onchange="enableDesktopNotifs()" style="width:24px; height:24px; cursor:pointer;"></div>
-            </div>
-        </div>
+        <div class="settings-content" id="tab-apparence"><div class="close-settings" onclick="closeSettings()">✕</div><h2 style="color: white; margin-top:0; font-size:28px; font-weight:800;">Apparence</h2><div style="background:var(--profile-card); padding:24px; border-radius:12px;"><div style="color:white; font-weight:700; margin-bottom:8px;">Couleur du Thème</div><input type="color" id="theme-color-picker" value="#5865F2"><button class="btn-primary" style="margin-top:20px; display:block;" onclick="saveTheme()">Appliquer le thème</button></div></div>
+        <div class="settings-content" id="tab-notifs"><div class="close-settings" onclick="closeSettings()">✕</div><h2 style="color: white; margin-top:0; font-size:28px; font-weight:800;">Notifications</h2><div style="background:var(--profile-card); border-radius:12px; padding: 24px;"><div class="info-row" style="margin-bottom: 24px;"><div><div style="color:white; font-weight:700;">Notifications Sonores</div><div style="color:var(--text-muted); font-size:14px;">Joue un petit son quand tu reçois un message.</div></div><input type="checkbox" id="toggle-sound" checked onchange="saveAppPrefs()" style="width:24px; height:24px; cursor:pointer;"></div><div style="height:1px; background:rgba(255,255,255,0.05); margin-bottom:24px;"></div><div class="info-row" style="margin-bottom: 0;"><div><div style="color:white; font-weight:700;">Notifications Bureau Windows</div><div style="color:var(--text-muted); font-size:14px;">Affiche une bulle en bas à droite de l'écran.</div></div><input type="checkbox" id="toggle-desktop" onchange="enableDesktopNotifs()" style="width:24px; height:24px; cursor:pointer;"></div></div></div>
     </div>
 
-    <!-- SCRIPTS -->
     <script src="https://cdn.socket.io/4.7.4/socket.io.min.js"></script>
     <script>
         var socket = io('https://aurora-chat-server.onrender.com', { transports: ['websocket', 'polling'] });
         var myUser = null; var currentRoom = 'general'; var unreadCounts = {};
+        let rawMessages = {}; // ✏️ Sauvegarde les vrais textes pour l'édition
+        let editingMessageId = null; // ID du message en cours d'édition
+
         var appPrefs = JSON.parse(localStorage.getItem('auroraPrefs')) || { sound: true, desktop: false };
         document.getElementById('toggle-sound').checked = appPrefs.sound; document.getElementById('toggle-desktop').checked = appPrefs.desktop;
         const notifSound = new Audio('data:audio/mp3;base64,//NExAAAAANIAAAAAExBTUUzLjEwMKqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq');
@@ -275,7 +259,7 @@
             const u = document.getElementById('login-username').value; const p = document.getElementById('login-password').value;
             if(u&&p) {
                 document.getElementById('login-btn').textContent = "Connexion en cours..."; document.getElementById('login-error').style.display = 'none';
-                let timeout = setTimeout(() => { document.getElementById('login-error').textContent = "Réveil du serveur Render en cours... Recliquez."; document.getElementById('login-error').style.display='block'; document.getElementById('login-btn').textContent = "Se connecter"; }, 8000);
+                let timeout = setTimeout(() => { document.getElementById('login-error').textContent = "Réveil du serveur Render en cours..."; document.getElementById('login-error').style.display='block'; document.getElementById('login-btn').textContent = "Se connecter"; }, 8000);
                 socket.emit('login', {loginName:u, password:p}, res => {
                     clearTimeout(timeout);
                     if(res.success) { myUser=res.userData; localStorage.setItem('aurora_login', u); localStorage.setItem('aurora_pass', p); document.getElementById('login-screen').style.display='none'; updateUI(); applyTheme(myUser.themeColor); } 
@@ -299,17 +283,24 @@
             });
         });
 
+        // 📚 PACK B : GESTION DES NOUVEAUX SALONS
         function switchRoom(rID, targetName=null) {
+            if(isCall) forceEndCall(); // Si on est en appel, on raccroche avant de changer de salon
+            
             currentRoom = rID; unreadCounts[rID]=0;
             if(document.getElementById(`badge-${rID}`)) document.getElementById(`badge-${rID}`).style.display='none';
             document.getElementById('messages').innerHTML='';
-            document.getElementById('chat-title').innerHTML = rID==='general' ? '🌐 # discussions' : `💬 MP avec ${targetName}`;
             document.querySelectorAll('.channel-item').forEach(el => el.classList.remove('active'));
-            event && event.currentTarget ? event.currentTarget.classList.add('active') : document.getElementById('btn-room-general').classList.add('active');
             
-            // Affiche les boutons d'appel uniquement dans les MP
-            document.getElementById('call-buttons-container').style.display = rID === 'general' ? 'none' : 'flex';
-            
+            if(['general', 'gaming', 'musique'].includes(rID)) {
+                document.getElementById('chat-title').innerHTML = `🌐 # ${targetName}`;
+                document.getElementById(`btn-room-${rID}`).classList.add('active');
+                document.getElementById('call-buttons-container').style.display = 'none'; // Pas d'appel dans les salons publics
+            } else {
+                document.getElementById('chat-title').innerHTML = `💬 MP avec ${targetName}`;
+                if(event && event.currentTarget) event.currentTarget.classList.add('active');
+                document.getElementById('call-buttons-container').style.display = 'flex'; // Appels autorisés en MP
+            }
             socket.emit('join room', rID);
         }
 
@@ -319,7 +310,28 @@
         socket.on('stop typing', (data) => { if(data.room === currentRoom) { usersTyping = usersTyping.filter(name => name !== data.name); updateTypingUI(); }});
         function updateTypingUI() { if(usersTyping.length === 0) typingEl.classList.remove('visible'); else if(usersTyping.length === 1) { typingEl.textContent = `${usersTyping[0]} est en train d'écrire...`; typingEl.classList.add('visible'); } else { typingEl.textContent = `Plusieurs personnes écrivent...`; typingEl.classList.add('visible'); } }
 
-        document.getElementById('form').onsubmit = (e) => { e.preventDefault(); const input=document.getElementById('input'); if(input.value){ socket.emit('chat message', {room:currentRoom, text:input.value}); input.value=''; socket.emit('stop typing', currentRoom); } };
+        // ✏️ PACK A : LOGIQUE D'ENVOI OU D'ÉDITION
+        document.getElementById('form').onsubmit = (e) => { 
+            e.preventDefault(); const input=document.getElementById('input'); 
+            if(input.value){ 
+                if(editingMessageId) {
+                    socket.emit('edit message', { room: currentRoom, messageId: editingMessageId, newText: input.value });
+                    editingMessageId = null; input.placeholder = "Envoyer un message...";
+                } else {
+                    socket.emit('chat message', {room:currentRoom, text:input.value}); 
+                }
+                input.value=''; socket.emit('stop typing', currentRoom); 
+            } 
+        };
+
+        // ✏️ PACK A : ANNULER L'ÉDITION AVEC LA TOUCHE ECHAP
+        document.getElementById('input').addEventListener('keydown', (e) => {
+            if(e.key === "Escape" && editingMessageId) {
+                editingMessageId = null;
+                document.getElementById('input').value = '';
+                document.getElementById('input').placeholder = "Envoyer un message...";
+            }
+        });
 
         document.getElementById('chat-image-upload').onchange = async (e) => {
             const f = e.target.files[0]; if(!f) return; const fd = new FormData(); fd.append('image', f);
@@ -333,6 +345,32 @@
         socket.on('chat history', data => { if(data.room===currentRoom) { document.getElementById('messages').innerHTML=''; data.history.forEach(displayMessage); }});
         socket.on('chat message', data => { if(data.room===currentRoom) displayMessage(data.message); });
 
+        // ✏️ PACK A : RÉCEPTION DE L'ÉDITION
+        socket.on('message edited', data => {
+            rawMessages[data.messageId] = data.newText;
+            const textEl = document.getElementById(`text-${data.messageId}`);
+            if(textEl) textEl.innerHTML = parseMarkdown(data.newText) + ' <span style="font-size:10px; opacity:0.5;">(modifié)</span>';
+        });
+
+        // ✏️ PACK A : RÉCEPTION DE LA SUPPRESSION
+        socket.on('message deleted', id => {
+            const msgEl = document.getElementById(`msg-${id}`);
+            if(msgEl) msgEl.remove();
+        });
+
+        function startEditMsg(id) {
+            editingMessageId = id;
+            document.getElementById('input').value = rawMessages[id];
+            document.getElementById('input').placeholder = "Modifier le message... (Échap pour annuler)";
+            document.getElementById('input').focus();
+        }
+
+        function deleteMsg(id) {
+            if(confirm("Veux-tu vraiment supprimer ce message ?")) {
+                socket.emit('delete message', { room: currentRoom, messageId: id });
+            }
+        }
+
         socket.on('notification', data => {
             if(data.room !== currentRoom && data.room.includes(myUser.id)) {
                 if(myUser.status !== 'dnd') {
@@ -345,8 +383,18 @@
         });
 
         function displayMessage(msg) {
-            let div = document.createElement('div'); div.className='message';
-            div.innerHTML = `<div class="msg-avatar"></div><div class="msg-content"><div class="msg-header"><span class="msg-author">${msg.authorName}</span><span class="msg-time">${msg.time}</span></div><span class="msg-text">${parseMarkdown(msg.text)}</span></div>`;
+            rawMessages[msg._id] = msg.text; // On sauvegarde le vrai texte pour pouvoir l'éditer plus tard
+            let div = document.createElement('div'); div.className='message'; div.id = `msg-${msg._id}`;
+            
+            let actionHTML = '';
+            if(msg.authorId === myUser.id) {
+                actionHTML = `<div class="msg-actions">
+                    <button class="msg-action-btn" title="Modifier" onclick="startEditMsg('${msg._id}')">✏️</button>
+                    <button class="msg-action-btn" title="Supprimer" style="color:var(--red-danger);" onclick="deleteMsg('${msg._id}')">🗑️</button>
+                </div>`;
+            }
+
+            div.innerHTML = `<div class="msg-avatar"></div><div class="msg-content"><div class="msg-header"><span class="msg-author">${msg.authorName}</span><span class="msg-time">${msg.time}</span></div><span class="msg-text" id="text-${msg._id}">${parseMarkdown(msg.text)}</span></div>${actionHTML}`;
             setAvatar(div.querySelector('.msg-avatar'), msg.authorName, msg.avatar);
             document.getElementById('messages').appendChild(div); document.getElementById('messages').scrollTop=document.getElementById('messages').scrollHeight;
         }
@@ -370,146 +418,112 @@
         function saveAppPrefs() { appPrefs.sound = document.getElementById('toggle-sound').checked; appPrefs.desktop = document.getElementById('toggle-desktop').checked; localStorage.setItem('auroraPrefs', JSON.stringify(appPrefs)); }
         function enableDesktopNotifs() { if(document.getElementById('toggle-desktop').checked) { Notification.requestPermission().then(p => { if(p !== 'granted') document.getElementById('toggle-desktop').checked=false; saveAppPrefs(); }); } else saveAppPrefs(); }
 
-        /* 🎥 LOGIQUE DES APPELS VIDÉOS ET PARTAGE D'ÉCRAN */
+        /* 🎥 FIX WEBRTC MULTI-SERVEURS ET SYNCHRONISATION */
         let pc, localStream, screenStream, isCall = false, isScreenSharing = false;
-        const cfg = { iceServers: [{ urls: 'stun:stun.l.google.com:19302' }] };
+        // 💡 J'ai ajouté plusieurs serveurs Google pour forcer la connexion à passer partout !
+        const cfg = { iceServers: [
+            { urls: 'stun:stun.l.google.com:19302' },
+            { urls: 'stun:stun1.l.google.com:19302' },
+            { urls: 'stun:stun2.l.google.com:19302' }
+        ] };
         let pOff = null;
 
-        // Démarrer l'appel (withVideo = true si clic sur Caméra)
         async function startCall(withVideo) {
             if(isCall) return endCall();
-            try {
-                // On demande le micro, et la vidéo si besoin
-                localStream = await navigator.mediaDevices.getUserMedia({ audio: true, video: withVideo });
-            } catch(e) { return alert("❌ Impossible d'accéder à ton micro ou à ta caméra."); }
+            try { localStream = await navigator.mediaDevices.getUserMedia({ audio: true, video: withVideo }); } 
+            catch(e) { return alert("❌ Impossible d'accéder au micro/caméra."); }
 
-            document.getElementById('local-video').srcObject = localStream;
-            document.getElementById('video-overlay').style.display = 'flex';
-            
-            // Mise à jour visuelle des boutons
+            document.getElementById('local-video').srcObject = localStream; document.getElementById('video-overlay').style.display = 'flex';
             document.getElementById('btn-toggle-cam').className = withVideo ? 'btn-call-action btn-cam-on' : 'btn-call-action btn-cam-off';
             document.getElementById('btn-toggle-cam').innerHTML = withVideo ? '📹 Caméra Active' : '📹 Caméra Coupée';
 
-            isCall = true;
-            pc = new RTCPeerConnection(cfg);
+            isCall = true; pc = new RTCPeerConnection(cfg);
             localStream.getTracks().forEach(t => pc.addTrack(t, localStream));
-
-            // Ruse WebRTC : si appel vocal simple, on prépare la ligne vidéo pour le partage d'écran plus tard !
             if (!withVideo) pc.addTransceiver('video', { direction: 'sendrecv' });
 
             pc.ontrack = e => { document.getElementById('remote-video').srcObject = e.streams[0]; };
             pc.onicecandidate = e => { if(e.candidate) socket.emit('webrtc-ice-candidate', { room: currentRoom, candidate: e.candidate }); };
+            pc.onconnectionstatechange = () => { if (pc.connectionState === 'disconnected' || pc.connectionState === 'failed') forceEndCall(); };
 
-            // Si la connexion coupe pour une raison réseau, on raccroche proprement
-            pc.onconnectionstatechange = () => { if (pc.connectionState === 'disconnected' || pc.connectionState === 'failed') endCall(); };
-
-            const o = await pc.createOffer();
-            await pc.setLocalDescription(o);
+            const o = await pc.createOffer(); await pc.setLocalDescription(o);
             socket.emit('webrtc-offer', { room: currentRoom, offer: o, name: myUser.displayName });
         }
 
         socket.on('webrtc-offer', d => {
             if(d.room === currentRoom) {
-                pOff = d.offer;
-                document.getElementById('call-modal-text').textContent = `📞 ${d.name} t'appelle !`;
-                document.getElementById('call-modal').style.display = 'block';
+                pOff = d.offer; document.getElementById('call-modal-text').textContent = `📞 ${d.name} t'appelle !`; document.getElementById('call-modal').style.display = 'block';
             }
         });
 
         async function acceptCall() {
             document.getElementById('call-modal').style.display = 'none';
-            try {
-                // Par défaut, celui qui répond donne aussi le micro et la vidéo
-                localStream = await navigator.mediaDevices.getUserMedia({ audio: true, video: true });
-            } catch(e) { return alert("❌ Accès refusé à la caméra/micro."); }
+            try { localStream = await navigator.mediaDevices.getUserMedia({ audio: true, video: true }); } 
+            catch(e) { return alert("❌ Accès refusé."); }
 
-            document.getElementById('local-video').srcObject = localStream;
-            document.getElementById('video-overlay').style.display = 'flex';
-            document.getElementById('btn-toggle-cam').className = 'btn-call-action btn-cam-on';
-            document.getElementById('btn-toggle-cam').innerHTML = '📹 Caméra Active';
+            document.getElementById('local-video').srcObject = localStream; document.getElementById('video-overlay').style.display = 'flex';
+            document.getElementById('btn-toggle-cam').className = 'btn-call-action btn-cam-on'; document.getElementById('btn-toggle-cam').innerHTML = '📹 Caméra Active';
 
-            isCall = true;
-            pc = new RTCPeerConnection(cfg);
+            isCall = true; pc = new RTCPeerConnection(cfg);
             localStream.getTracks().forEach(t => pc.addTrack(t, localStream));
 
             pc.ontrack = e => { document.getElementById('remote-video').srcObject = e.streams[0]; };
             pc.onicecandidate = e => { if(e.candidate) socket.emit('webrtc-ice-candidate', { room: currentRoom, candidate: e.candidate }); };
-            pc.onconnectionstatechange = () => { if (pc.connectionState === 'disconnected' || pc.connectionState === 'failed') endCall(); };
+            pc.onconnectionstatechange = () => { if (pc.connectionState === 'disconnected' || pc.connectionState === 'failed') forceEndCall(); };
 
             await pc.setRemoteDescription(new RTCSessionDescription(pOff));
-            const a = await pc.createAnswer();
-            await pc.setLocalDescription(a);
+            const a = await pc.createAnswer(); await pc.setLocalDescription(a);
             socket.emit('webrtc-answer', { room: currentRoom, answer: a });
         }
 
-        function rejectCall() { document.getElementById('call-modal').style.display = 'none'; pOff = null; }
+        function rejectCall() { document.getElementById('call-modal').style.display = 'none'; pOff = null; socket.emit('end-call', currentRoom); }
 
-        function endCall() {
+        // 📞 Raccrocher localement (ferme tout sans envoyer de message)
+        function forceEndCall() {
             if(pc) pc.close();
             if(localStream) localStream.getTracks().forEach(t => t.stop());
             if(screenStream) screenStream.getTracks().forEach(t => t.stop());
-            isCall = false; isScreenSharing = false;
+            isCall = false; isScreenSharing = false; pOff = null;
             document.getElementById('video-overlay').style.display = 'none';
+            document.getElementById('call-modal').style.display = 'none';
             document.getElementById('remote-video').srcObject = null;
             document.getElementById('local-video').srcObject = null;
-            // On signale à l'autre qu'on a raccroché en fermant la page WebRTC
         }
 
-        // 🖥️ PARTAGE D'ÉCRAN
+        // 📞 Clic sur le bouton Raccrocher (ferme tout ET prévient l'autre)
+        function endCall() {
+            forceEndCall();
+            socket.emit('end-call', currentRoom); 
+        }
+
+        // 📞 Quand l'autre personne raccroche, on ferme tout aussi !
+        socket.on('end-call', () => { forceEndCall(); });
+
         async function toggleScreenShare() {
             if(!isCall || !pc) return;
-            
             if(isScreenSharing) {
-                // On arrête le partage et on remet la caméra
                 screenStream.getTracks().forEach(t => t.stop());
                 const videoTrack = localStream.getVideoTracks()[0];
                 const sender = pc.getSenders().find(s => s.track && s.track.kind === 'video');
                 if(sender && videoTrack) sender.replaceTrack(videoTrack);
-                
-                document.getElementById('local-video').srcObject = localStream;
-                isScreenSharing = false;
+                document.getElementById('local-video').srcObject = localStream; isScreenSharing = false;
             } else {
                 try {
-                    // On demande à l'utilisateur de choisir la fenêtre à partager
                     screenStream = await navigator.mediaDevices.getDisplayMedia({ video: true });
                     const screenTrack = screenStream.getVideoTracks()[0];
-
-                    // Si l'utilisateur clique sur "Arrêter le partage" dans le navigateur Windows
                     screenTrack.onended = () => { toggleScreenShare(); };
-
                     const sender = pc.getSenders().find(s => s.track && s.track.kind === 'video');
-                    if(sender) sender.replaceTrack(screenTrack); // Remplacer le flux caméra par l'écran !
-
-                    document.getElementById('local-video').srcObject = screenStream;
-                    isScreenSharing = true;
-                } catch(e) {
-                    // S'il annule la fenêtre de choix d'écran, on ne fait rien.
-                }
+                    if(sender) sender.replaceTrack(screenTrack);
+                    document.getElementById('local-video').srcObject = screenStream; isScreenSharing = true;
+                } catch(e) {}
             }
         }
 
-        // COUPER LE MICRO
         function toggleMic() {
-            if(localStream) {
-                const audioTrack = localStream.getAudioTracks()[0];
-                if(audioTrack) {
-                    audioTrack.enabled = !audioTrack.enabled;
-                    document.getElementById('btn-toggle-mic').className = audioTrack.enabled ? 'btn-call-action btn-cam-on' : 'btn-call-action btn-cam-off';
-                    document.getElementById('btn-toggle-mic').innerHTML = audioTrack.enabled ? '🎤 Micro Actif' : '🎤 Micro Coupé';
-                }
-            }
+            if(localStream) { const track = localStream.getAudioTracks()[0]; if(track) { track.enabled = !track.enabled; document.getElementById('btn-toggle-mic').className = track.enabled ? 'btn-call-action btn-cam-on' : 'btn-call-action btn-cam-off'; document.getElementById('btn-toggle-mic').innerHTML = track.enabled ? '🎤 Micro Actif' : '🎤 Micro Coupé'; } }
         }
 
-        // COUPER LA CAMÉRA
         function toggleCam() {
-            if(localStream && !isScreenSharing) {
-                const videoTrack = localStream.getVideoTracks()[0];
-                if(videoTrack) {
-                    videoTrack.enabled = !videoTrack.enabled;
-                    document.getElementById('btn-toggle-cam').className = videoTrack.enabled ? 'btn-call-action btn-cam-on' : 'btn-call-action btn-cam-off';
-                    document.getElementById('btn-toggle-cam').innerHTML = videoTrack.enabled ? '📹 Caméra Active' : '📹 Caméra Coupée';
-                }
-            }
+            if(localStream && !isScreenSharing) { const track = localStream.getVideoTracks()[0]; if(track) { track.enabled = !track.enabled; document.getElementById('btn-toggle-cam').className = track.enabled ? 'btn-call-action btn-cam-on' : 'btn-call-action btn-cam-off'; document.getElementById('btn-toggle-cam').innerHTML = track.enabled ? '📹 Caméra Active' : '📹 Caméra Coupée'; } }
         }
 
         socket.on('webrtc-answer', async d => { if(pc) await pc.setRemoteDescription(new RTCSessionDescription(d.answer)); });
