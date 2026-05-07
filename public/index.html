@@ -7,89 +7,97 @@
         :root { --bg-tertiary: #1e1f22; --bg-secondary: #2b2d31; --bg-primary: #313338; --bg-message-hover: #2e3035; --bg-modifier-hover: #35373c; --text-normal: #dbdee1; --text-muted: #80848e; --brand-experiment: #5865F2; --green-success: #23a559; --yellow-idle: #f0b232; --red-danger: #da373c; --grey-offline: #80848e; --profile-card: #232428; }
         body { font-family: 'Segoe UI', Tahoma, sans-serif; margin: 0; padding: 0; display: flex; height: 100vh; background-color: var(--bg-primary); color: var(--text-normal); overflow: hidden; }
         
-        /* BACKGROUND ANIMÉ */
+        /* 🌌 BACKGROUND ANIMÉ AURORA 🌌 */
         @keyframes auroraAnim { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
         #login-screen { position: absolute; inset: 0; background: linear-gradient(-45deg, #1e1f22, #2b2d31, #5865F2, #23a559, #9b59b6); background-size: 400% 400%; animation: auroraAnim 12s ease infinite; display: flex; justify-content: center; align-items: center; z-index: 2000; }
-        .login-box { background-color: rgba(43, 45, 49, 0.85); backdrop-filter: blur(10px); padding: 32px; border-radius: 12px; width: 400px; text-align: center; box-shadow: 0 8px 24px rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1); }
-        .login-box h2 { color: white; margin: 0 0 20px 0; font-size: 28px; }
-        .login-box input { width: 100%; box-sizing: border-box; padding: 12px; margin-bottom: 15px; border-radius: 6px; border: none; background-color: rgba(30, 31, 34, 0.8); color: white; outline: none; font-size: 14px;}
-        .login-box input:focus { outline: 2px solid var(--brand-experiment); }
-        .login-box button { width: 100%; padding: 12px; background-color: var(--brand-experiment); color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 16px; transition: 0.2s;}
-        .login-box button:hover { opacity: 0.9; transform: translateY(-1px); }
-        #login-error { color: #ff6b6b; font-size: 14px; margin-bottom: 15px; display: none; font-weight: bold; }
         
-        /* VERSION APPLI */
-        #app-version { position: absolute; bottom: 10px; right: 15px; color: rgba(255,255,255,0.4); font-size: 12px; z-index: 9999; font-weight: bold; pointer-events: none;}
+        /* BOÎTE DE CONNEXION PROPRE */
+        .login-box { background-color: rgba(43, 45, 49, 0.85); backdrop-filter: blur(12px); padding: 40px; border-radius: 16px; width: 380px; text-align: center; box-shadow: 0 15px 35px rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.08); }
+        .login-box h2 { color: white; margin: 0 0 25px 0; font-size: 32px; font-weight: 800; letter-spacing: 1px;}
+        .login-box input { width: 100%; box-sizing: border-box; padding: 14px; margin-bottom: 16px; border-radius: 8px; border: 1px solid transparent; background-color: rgba(30, 31, 34, 0.9); color: white; outline: none; font-size: 15px; transition: 0.3s;}
+        .login-box input:focus { border: 1px solid var(--brand-experiment); background-color: #1e1f22;}
+        .login-box button { width: 100%; padding: 14px; background-color: var(--brand-experiment); color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 16px; transition: 0.2s; margin-top: 10px;}
+        .login-box button:hover { opacity: 0.9; transform: translateY(-2px); box-shadow: 0 5px 15px rgba(88, 101, 242, 0.3); }
+        #login-error { color: #ff6b6b; font-size: 14px; margin-bottom: 15px; display: none; font-weight: 600; background: rgba(255, 107, 107, 0.1); padding: 10px; border-radius: 6px;}
+        
+        /* 🏷️ BADGE DE VERSION 🏷️ */
+        #app-version { position: absolute; bottom: 20px; right: 25px; color: rgba(255,255,255,0.6); font-size: 13px; font-weight: bold; background: rgba(0,0,0,0.4); padding: 6px 12px; border-radius: 20px; backdrop-filter: blur(5px); pointer-events: none; border: 1px solid rgba(255,255,255,0.1);}
 
-        /* UI Principale */
+        /* UI Principale (Identique, propre et rangée) */
         .servers { width: 72px; background-color: var(--bg-tertiary); display: flex; flex-direction: column; align-items: center; padding-top: 12px; gap: 8px; z-index: 10; }
-        .server-icon { width: 48px; height: 48px; background-color: var(--bg-primary); border-radius: 50%; display: flex; justify-content: center; align-items: center; cursor: pointer; color: white; font-weight: bold; transition: 0.2s;}
+        .server-icon { width: 48px; height: 48px; background-color: var(--bg-primary); border-radius: 50%; display: flex; justify-content: center; align-items: center; cursor: pointer; color: white; font-weight: bold; transition: 0.3s;}
+        .server-icon:hover { border-radius: 16px; background-color: var(--brand-experiment); }
         .server-icon.active { border-radius: 16px; background-color: var(--brand-experiment); }
-        .server-separator { width: 32px; height: 2px; background-color: var(--bg-modifier-hover); }
+        .server-separator { width: 32px; height: 2px; background-color: var(--bg-modifier-hover); margin: 4px 0;}
         .sidebar { width: 240px; background-color: var(--bg-secondary); display: flex; flex-direction: column; }
         .channel-list { padding: 10px; flex-grow: 1; overflow-y: auto; }
-        .channel-category { color: var(--text-muted); font-size: 12px; font-weight: bold; text-transform: uppercase; margin: 15px 0 5px 5px; }
-        .channel-item { padding: 6px 8px; border-radius: 4px; cursor: pointer; color: var(--text-muted); display: flex; align-items: center; gap: 10px; margin-bottom: 2px; position: relative;}
+        .channel-category { color: var(--text-muted); font-size: 12px; font-weight: 800; text-transform: uppercase; margin: 15px 0 5px 5px; }
+        .channel-item { padding: 8px 10px; border-radius: 6px; cursor: pointer; color: var(--text-muted); display: flex; align-items: center; gap: 10px; margin-bottom: 2px; font-weight: 500;}
         .channel-item:hover, .channel-item.active { background-color: var(--bg-modifier-hover); color: white; }
         .channel-avatar { width: 32px; height: 32px; border-radius: 50%; background-size: cover; background-position: center; display: flex; justify-content: center; align-items: center; color: white; font-weight: bold; position: relative;}
-        .status-dot { position: absolute; bottom: -2px; right: -2px; width: 12px; height: 12px; border-radius: 50%; border: 2px solid var(--bg-secondary); }
+        .status-dot { position: absolute; bottom: -2px; right: -2px; width: 12px; height: 12px; border-radius: 50%; border: 3px solid var(--bg-secondary); }
         .status-online { background-color: var(--green-success); }
         .status-idle { background-color: var(--yellow-idle); }
         .status-dnd { background-color: var(--red-danger); }
         .status-invisible { background-color: var(--grey-offline); }
-        .notification-badge { background-color: var(--red-danger); color: white; font-size: 10px; font-weight: bold; padding: 2px 6px; border-radius: 10px; position: absolute; right: 10px; display: none; }
-        .user-panel { background-color: #232428; padding: 0 8px; height: 52px; display: flex; align-items: center; gap: 8px; }
+        .notification-badge { background-color: var(--red-danger); color: white; font-size: 11px; font-weight: bold; padding: 2px 6px; border-radius: 12px; position: absolute; right: 10px; display: none; }
+        .user-panel { background-color: #232428; padding: 0 10px; height: 52px; display: flex; align-items: center; gap: 10px; }
         .user-panel-avatar { width: 32px; height: 32px; border-radius: 50%; background-size: cover; background-position: center; position: relative; cursor: pointer;}
         .user-info { flex-grow: 1; overflow: hidden; }
-        .user-info .username { color: white; font-weight: bold; font-size: 14px; }
-        .btn-icon { background: transparent; border: none; color: var(--text-muted); cursor: pointer; font-size: 18px; padding: 5px; }
-        .btn-icon:hover { color: white; }
+        .user-info .username { color: white; font-weight: 700; font-size: 14px; white-space: nowrap; text-overflow: ellipsis; overflow: hidden;}
+        .btn-icon { background: transparent; border: none; color: var(--text-muted); cursor: pointer; font-size: 18px; padding: 6px; border-radius: 4px; transition: 0.2s;}
+        .btn-icon:hover { color: white; background: rgba(255,255,255,0.1);}
         .chat { flex-grow: 1; display: flex; flex-direction: column; background-color: var(--bg-primary); }
-        .chat-header { height: 48px; padding: 0 16px; border-bottom: 1px solid #1f2023; display: flex; align-items: center; justify-content: space-between; font-weight: bold; color: white; box-shadow: 0 1px 2px rgba(0,0,0,0.1);}
-        .call-btn { background-color: var(--green-success); color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-weight: bold; display: none; gap: 6px; align-items: center; }
+        .chat-header { height: 48px; padding: 0 16px; border-bottom: 1px solid #1f2023; display: flex; align-items: center; justify-content: space-between; font-weight: bold; color: white; box-shadow: 0 1px 2px rgba(0,0,0,0.2); z-index: 5;}
+        .call-btn { background-color: var(--green-success); color: white; border: none; padding: 6px 14px; border-radius: 4px; cursor: pointer; font-weight: bold; display: none; gap: 6px; align-items: center; transition: 0.2s;}
+        .call-btn:hover { opacity: 0.9; }
         .call-btn.active { background-color: var(--red-danger); }
         #messages { flex-grow: 1; overflow-y: auto; padding: 16px 0; }
-        .message { display: flex; gap: 16px; padding: 2px 16px 2px 72px; position: relative; margin-top: 17px; }
+        .message { display: flex; gap: 16px; padding: 4px 16px 4px 72px; position: relative; margin-top: 17px; }
         .message:hover { background-color: var(--bg-message-hover); }
-        .msg-avatar { position: absolute; left: 16px; width: 40px; height: 40px; border-radius: 50%; background-size: cover; background-position: center; }
+        .msg-avatar { position: absolute; left: 16px; width: 40px; height: 40px; border-radius: 50%; background-size: cover; background-position: center; cursor: pointer;}
         .msg-content { display: flex; flex-direction: column; }
-        .msg-header { display: flex; gap: 8px; margin-bottom: 4px; align-items: baseline;}
-        .msg-author { font-weight: 500; color: white; font-size: 16px; }
+        .msg-header { display: flex; gap: 10px; margin-bottom: 4px; align-items: baseline;}
+        .msg-author { font-weight: 600; color: white; font-size: 16px; cursor: pointer;}
+        .msg-author:hover { text-decoration: underline; }
         .msg-time { color: var(--text-muted); font-size: 12px; }
-        .msg-text { color: var(--text-normal); font-size: 15px; }
+        .msg-text { color: var(--text-normal); font-size: 15px; line-height: 1.4;}
         .input-area { padding: 0 16px 24px 16px; }
-        .input-wrapper { display: flex; align-items: center; background-color: #383a40; border-radius: 8px; padding: 0 16px; min-height: 44px; }
-        #input { flex-grow: 1; background: transparent; border: none; color: white; outline: none; font-size: 16px; padding: 11px 0; }
-        #call-modal { position: absolute; top: 20px; right: 20px; background: var(--bg-secondary); padding: 15px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.5); z-index: 3000; display: none; border: 1px solid var(--brand-experiment); }
+        .input-wrapper { display: flex; align-items: center; background-color: #383a40; border-radius: 8px; padding: 0 16px; min-height: 48px; }
+        #input { flex-grow: 1; background: transparent; border: none; color: white; outline: none; font-size: 16px; padding: 14px 0; }
+        #call-modal { position: absolute; top: 20px; right: 20px; background: var(--bg-secondary); padding: 20px; border-radius: 8px; box-shadow: 0 8px 24px rgba(0,0,0,0.6); z-index: 3000; display: none; border: 1px solid var(--brand-experiment); }
         
-        /* PARAMÈTRES */
+        /* PARAMÈTRES (Épurés) */
         #settings-screen { position: absolute; inset: 0; background-color: var(--bg-primary); display: none; z-index: 1000; }
         .settings-sidebar { width: 30%; background-color: var(--bg-secondary); display: flex; justify-content: flex-end; padding-top: 60px; }
         .settings-nav { width: 220px; padding: 0 20px; }
-        .settings-item { padding: 8px 10px; color: #b5bac1; border-radius: 4px; cursor: pointer; margin-bottom: 2px;}
+        .settings-item { padding: 10px 12px; color: #b5bac1; border-radius: 6px; cursor: pointer; margin-bottom: 4px; font-weight: 600;}
         .settings-item.active { background-color: var(--bg-modifier-hover); color: white; }
         .settings-content { width: 70%; padding: 60px 40px; overflow-y: auto; position: relative; display: none;}
         .settings-content.active { display: block; }
-        .close-settings { position: absolute; top: 40px; right: 40px; width: 36px; height: 36px; border: 2px solid var(--text-muted); border-radius: 50%; display: flex; justify-content: center; align-items: center; color: var(--text-muted); cursor: pointer; }
-        .close-settings:hover { border-color: white; color: white;}
-        .profile-card { background-color: var(--profile-card); border-radius: 8px; margin-bottom: 40px; }
-        .profile-banner { height: 100px; background-color: var(--brand-experiment); border-radius: 8px 8px 0 0; transition: background-color 0.3s;}
+        .close-settings { position: absolute; top: 40px; right: 40px; width: 36px; height: 36px; border: 2px solid var(--text-muted); border-radius: 50%; display: flex; justify-content: center; align-items: center; color: var(--text-muted); cursor: pointer; transition: 0.2s;}
+        .close-settings:hover { border-color: white; color: white; transform: rotate(90deg);}
+        .profile-card { background-color: var(--profile-card); border-radius: 12px; margin-bottom: 40px; overflow: hidden;}
+        .profile-banner { height: 120px; background-color: var(--brand-experiment); transition: background-color 0.3s;}
         .profile-header { padding: 16px; display: flex; justify-content: flex-end; position: relative; height: 35px;}
-        .profile-avatar-large { width: 100px; height: 100px; border-radius: 50%; border: 6px solid var(--profile-card); position: absolute; top: -50px; left: 16px; background-color: var(--bg-primary); background-size: cover; background-position: center; display: flex; justify-content: center; align-items: center; font-size: 40px; color: white; font-weight: bold; }
-        .profile-names { padding: 0 16px 20px 16px;}
-        .btn-primary { background-color: var(--brand-experiment); color: white; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer; transition: 0.3s;}
+        .profile-avatar-large { width: 120px; height: 120px; border-radius: 50%; border: 8px solid var(--profile-card); position: absolute; top: -60px; left: 16px; background-color: var(--bg-primary); background-size: cover; background-position: center; display: flex; justify-content: center; align-items: center; font-size: 40px; color: white; font-weight: bold; }
+        .profile-names { padding: 10px 16px 20px 16px;}
+        .btn-primary { background-color: var(--brand-experiment); color: white; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer; transition: 0.3s; font-weight: bold;}
+        .btn-primary:hover { opacity: 0.9; }
         .info-list { background-color: var(--bg-primary); border-radius: 8px; padding: 16px; margin: 0 16px 16px 16px; }
         .info-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-        .settings-input { background-color: var(--bg-tertiary); border: none; color: white; padding: 8px; border-radius: 4px; outline: none; width: 200px;}
-        .btn-secondary { background-color: #4e5058; color: white; border: none; padding: 6px 16px; border-radius: 4px; cursor: pointer; }
-        select, input[type="color"] { background-color: var(--bg-tertiary); border: none; color: white; padding: 8px; border-radius: 4px; outline: none; }
-        .mic-bar { height: 10px; background-color: var(--bg-tertiary); border-radius: 5px; margin-top: 10px; overflow: hidden; width: 300px;}
+        .settings-input { background-color: var(--bg-tertiary); border: none; color: white; padding: 10px; border-radius: 4px; outline: none; width: 250px; font-size: 14px;}
+        .btn-secondary { background-color: #4e5058; color: white; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer; font-weight: 600; transition: 0.2s;}
+        .btn-secondary:hover { background-color: #6d6f78; }
+        select, input[type="color"] { background-color: var(--bg-tertiary); border: none; color: white; padding: 8px; border-radius: 4px; outline: none; cursor: pointer;}
+        .mic-bar { height: 12px; background-color: var(--bg-tertiary); border-radius: 6px; margin-top: 15px; overflow: hidden; width: 100%; max-width: 400px;}
         .mic-level { height: 100%; background-color: var(--green-success); width: 0%; transition: width 0.1s;}
     </style>
 </head>
 <body>
+    <!-- ÉCRAN DE CONNEXION -->
     <div id="login-screen">
-        <div id="app-version">v1.0.4</div> <!-- VERSION ICI -->
+        <div id="app-version">Version 1.0.4</div>
         <div class="login-box">
             <h2>Aurora</h2>
             <div id="login-error"></div>
@@ -99,7 +107,7 @@
         </div>
     </div>
 
-    <!-- UI Principale -->
+    <!-- UI PRINCIPALE -->
     <div class="servers">
         <div class="server-icon active" onclick="switchRoom('general')">🌐</div>
         <div class="server-separator"></div>
@@ -135,7 +143,7 @@
     </div>
 
     <div id="call-modal">
-        <div style="color:white; font-weight:bold; margin-bottom:10px;">📞 Appel entrant...</div>
+        <div style="color:white; font-weight:bold; margin-bottom:15px; font-size: 18px;">📞 Appel entrant...</div>
         <div style="display:flex; gap:10px;">
             <button class="btn-primary" style="background-color:var(--green-success);" onclick="acceptCall()">Répondre</button>
             <button class="btn-primary" style="background-color:var(--red-danger);" onclick="rejectCall()">Ignorer</button>
@@ -143,7 +151,7 @@
     </div>
     <audio id="remote-audio" autoplay></audio>
 
-    <!-- PARAMÈTRES -->
+    <!-- ÉCRAN DES PARAMÈTRES -->
     <div id="settings-screen">
         <div class="settings-sidebar">
             <div class="settings-nav">
@@ -151,13 +159,14 @@
                 <div class="settings-item" onclick="openSettings('apparence')" id="nav-apparence">Apparence</div>
                 <div class="settings-item" onclick="openSettings('voix')" id="nav-voix">Voix & Vidéo</div>
                 <div class="settings-item" onclick="openSettings('notifs')" id="nav-notifs">Notifications</div>
-                <div class="settings-item" id="logout-btn" style="color:var(--red-danger); margin-top:20px;">Déconnexion</div>
+                <div class="settings-separator" style="height:1px; background:rgba(255,255,255,0.1); margin:10px 0;"></div>
+                <div class="settings-item" id="logout-btn" style="color:var(--red-danger);">Déconnexion</div>
             </div>
         </div>
         
         <div class="settings-content active" id="tab-compte">
             <div class="close-settings" onclick="closeSettings()">✕</div>
-            <h2 style="color: white; margin-top:0;">Mon compte</h2>
+            <h2 style="color: white; margin-top:0; font-size:24px;">Mon compte</h2>
             <div class="profile-card">
                 <div class="profile-banner"></div>
                 <div class="profile-header">
@@ -166,117 +175,100 @@
                     <input type="file" id="avatar-upload" accept="image/*" style="display:none;">
                 </div>
                 <div class="profile-names">
-                    <div style="color: white; font-size: 20px; font-weight: bold;" id="settings-display-name">...</div>
-                    <div style="color: var(--text-muted); font-size: 14px;" id="settings-bio-text">...</div>
+                    <div style="color: white; font-size: 22px; font-weight: bold;" id="settings-display-name">...</div>
+                    <div style="color: var(--text-muted); font-size: 14px; margin-top:4px;" id="settings-bio-text">...</div>
                 </div>
                 <div class="info-list">
-                    <div class="info-row"><div><div style="color:var(--text-muted); font-size:12px; font-weight:bold;">NOM D'AFFICHAGE</div><input type="text" id="input-displayname" class="settings-input"></div><button class="btn-secondary" onclick="saveSetting('displayName')">Sauvegarder</button></div>
-                    <div class="info-row"><div><div style="color:var(--text-muted); font-size:12px; font-weight:bold;">A PROPOS DE MOI</div><input type="text" id="input-bio" class="settings-input" placeholder="Écris ta bio..."></div><button class="btn-secondary" onclick="saveSetting('bio')">Sauvegarder</button></div>
-                    <div class="info-row"><div><div style="color:var(--text-muted); font-size:12px; font-weight:bold;">NOUVEAU MOT DE PASSE</div><input type="password" id="input-password" class="settings-input" placeholder="Vide = inchangé"></div><button class="btn-secondary" onclick="saveSetting('password')">Sauvegarder</button></div>
+                    <div class="info-row"><div><div style="color:var(--text-muted); font-size:12px; font-weight:bold; margin-bottom:4px;">NOM D'AFFICHAGE</div><input type="text" id="input-displayname" class="settings-input"></div><button class="btn-secondary" onclick="saveSetting('displayName')">Sauvegarder</button></div>
+                    <div class="info-row"><div><div style="color:var(--text-muted); font-size:12px; font-weight:bold; margin-bottom:4px;">A PROPOS DE MOI</div><input type="text" id="input-bio" class="settings-input" placeholder="Écris ta bio..."></div><button class="btn-secondary" onclick="saveSetting('bio')">Sauvegarder</button></div>
+                    <div class="info-row"><div><div style="color:var(--text-muted); font-size:12px; font-weight:bold; margin-bottom:4px;">NOUVEAU MOT DE PASSE</div><input type="password" id="input-password" class="settings-input" placeholder="Laisser vide pour ne pas changer"></div><button class="btn-secondary" onclick="saveSetting('password')">Sauvegarder</button></div>
                 </div>
             </div>
         </div>
 
         <div class="settings-content" id="tab-apparence">
             <div class="close-settings" onclick="closeSettings()">✕</div>
-            <h2 style="color: white; margin-top:0;">Apparence</h2>
-            <div style="margin-bottom:20px; color:var(--text-normal);">Choisis la couleur principale de ton application Aurora.</div>
-            <input type="color" id="theme-color-picker" value="#5865F2" style="width:100px; height:50px; cursor:pointer;">
-            <button class="btn-primary" style="margin-top:10px; display:block;" onclick="saveTheme()">Appliquer le thème</button>
+            <h2 style="color: white; margin-top:0; font-size:24px;">Apparence</h2>
+            <div style="margin-bottom:20px; color:var(--text-normal); font-size:15px;">Personnalise ton expérience. Choisis la couleur principale de ton interface Aurora.</div>
+            <div style="background:var(--profile-card); padding:20px; border-radius:8px;">
+                <div style="color:white; font-weight:bold; margin-bottom:10px;">Couleur du Thème</div>
+                <input type="color" id="theme-color-picker" value="#5865F2" style="width:120px; height:50px;">
+                <button class="btn-primary" style="margin-top:15px; display:block;" onclick="saveTheme()">Appliquer le thème</button>
+            </div>
         </div>
 
         <div class="settings-content" id="tab-voix">
             <div class="close-settings" onclick="closeSettings()">✕</div>
-            <h2 style="color: white; margin-top:0;">Voix & Vidéo</h2>
-            <div style="margin-bottom:10px; color:var(--text-normal);">Test du micro</div>
-            <button class="btn-secondary" id="btn-test-mic" onclick="toggleMicTest()">Commencer le test</button>
-            <div class="mic-bar"><div class="mic-level" id="mic-level"></div></div>
+            <h2 style="color: white; margin-top:0; font-size:24px;">Voix & Vidéo</h2>
+            <div style="background:var(--profile-card); padding:20px; border-radius:8px;">
+                <div style="color:white; font-weight:bold; margin-bottom:10px;">Test du micro</div>
+                <div style="color:var(--text-muted); font-size:14px; margin-bottom:15px;">Parle pour vérifier que ton micro est bien détecté par l'application.</div>
+                <button class="btn-secondary" id="btn-test-mic" onclick="toggleMicTest()">Commencer le test</button>
+                <div class="mic-bar"><div class="mic-level" id="mic-level"></div></div>
+            </div>
         </div>
 
         <div class="settings-content" id="tab-notifs">
             <div class="close-settings" onclick="closeSettings()">✕</div>
-            <h2 style="color: white; margin-top:0;">Notifications</h2>
-            <div class="info-row" style="background:var(--profile-card); padding:15px; border-radius:8px;">
-                <div style="color:white; font-weight:bold;">Notifications Sonores (Bip)</div><input type="checkbox" id="toggle-sound" checked onchange="saveAppPrefs()" style="width:20px; height:20px;">
+            <h2 style="color: white; margin-top:0; font-size:24px;">Notifications</h2>
+            <div class="info-row" style="background:var(--profile-card); padding:20px; border-radius:8px;">
+                <div>
+                    <div style="color:white; font-weight:bold; font-size:16px;">Notifications Sonores</div>
+                    <div style="color:var(--text-muted); font-size:13px; margin-top:4px;">Joue un petit "bip" quand tu reçois un message privé.</div>
+                </div>
+                <input type="checkbox" id="toggle-sound" checked onchange="saveAppPrefs()" style="width:24px; height:24px; cursor:pointer;">
             </div>
-            <div class="info-row" style="background:var(--profile-card); padding:15px; border-radius:8px;">
-                <div style="color:white; font-weight:bold;">Notifications Windows (Bureau)</div><input type="checkbox" id="toggle-desktop" onchange="enableDesktopNotifs()" style="width:20px; height:20px;">
+            <div class="info-row" style="background:var(--profile-card); padding:20px; border-radius:8px;">
+                <div>
+                    <div style="color:white; font-weight:bold; font-size:16px;">Notifications Bureau Windows</div>
+                    <div style="color:var(--text-muted); font-size:13px; margin-top:4px;">Affiche une bulle en bas à droite de l'écran.</div>
+                </div>
+                <input type="checkbox" id="toggle-desktop" onchange="enableDesktopNotifs()" style="width:24px; height:24px; cursor:pointer;">
             </div>
         </div>
     </div>
 
-    <!-- CONNEXION AU SERVEUR RENDER ICI 👇 -->
-    <script src="https://aurora-chat-server.onrender.com/socket.io/socket.io.js"></script>
+    <!-- LOGIQUE JAVASCRIPT ET CONNEXION -->
+    <script src="https://cdn.socket.io/4.7.4/socket.io.min.js"></script>
     <script>
-        var socket = io('https://aurora-chat-server.onrender.com', {
-            transports: ['websocket', 'polling']
-        });
-        
-        var myUser = null;
-        var currentRoom = 'general';
-        var unreadCounts = {};
-        
+        var socket = io('https://aurora-chat-server.onrender.com', { transports: ['websocket', 'polling'] });
+        var myUser = null; var currentRoom = 'general'; var unreadCounts = {};
         var appPrefs = JSON.parse(localStorage.getItem('auroraPrefs')) || { sound: true, desktop: false };
-        document.getElementById('toggle-sound').checked = appPrefs.sound;
-        document.getElementById('toggle-desktop').checked = appPrefs.desktop;
-
+        document.getElementById('toggle-sound').checked = appPrefs.sound; document.getElementById('toggle-desktop').checked = appPrefs.desktop;
         const notifSound = new Audio('data:audio/mp3;base64,//NExAAAAANIAAAAAExBTUUzLjEwMKqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq//NExAAAAANIAAAAAExBTUUzLjEwMKqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq');
 
         function stringToColor(str) { let h=0; for(let i=0;i<str.length;i++) h=str.charCodeAt(i)+((h<<5)-h); return `hsl(${h%360},70%,60%)`; }
-        function setAvatar(el, name, url) {
-            if(url) { el.style.backgroundImage=`url('${url}')`; el.style.backgroundColor='transparent'; el.textContent=''; }
-            else { el.style.backgroundImage='none'; el.style.backgroundColor=stringToColor(name||'?'); el.textContent=name?name.charAt(0).toUpperCase():'?'; }
-        }
+        function setAvatar(el, name, url) { if(url) { el.style.backgroundImage=`url('${url}')`; el.style.backgroundColor='transparent'; el.textContent=''; } else { el.style.backgroundImage='none'; el.style.backgroundColor=stringToColor(name||'?'); el.textContent=name?name.charAt(0).toUpperCase():'?'; } }
 
-        // SECURITE : SI LE SERVEUR PLANTE, ON DÉBLOQUE LE BOUTON
         socket.on('connect_error', (err) => {
-            document.getElementById('login-error').textContent = "Impossible de joindre le serveur. Réessayez."; 
+            document.getElementById('login-error').textContent = "Le serveur dort ou est injoignable. Réessayez dans 10 sec."; 
             document.getElementById('login-error').style.display='block'; 
             document.getElementById('login-btn').textContent = "Se connecter";
         });
 
-        // Connexion
         document.getElementById('login-btn').onclick = () => {
-            const u = document.getElementById('login-username').value;
-            const p = document.getElementById('login-password').value;
+            const u = document.getElementById('login-username').value; const p = document.getElementById('login-password').value;
             if(u&&p) {
-                document.getElementById('login-btn').textContent = "Connexion...";
+                document.getElementById('login-btn').textContent = "Connexion en cours...";
                 document.getElementById('login-error').style.display = 'none';
-                
-                // On met un timer. Si dans 5 secondes rien ne se passe, on affiche une erreur.
-                let timeout = setTimeout(() => {
-                    document.getElementById('login-error').textContent = "Le serveur met trop de temps à répondre..."; 
-                    document.getElementById('login-error').style.display='block'; 
-                    document.getElementById('login-btn').textContent = "Se connecter";
-                }, 5000);
-
+                let timeout = setTimeout(() => { document.getElementById('login-error').textContent = "Réveil du serveur Render en cours... Recliquez."; document.getElementById('login-error').style.display='block'; document.getElementById('login-btn').textContent = "Se connecter"; }, 8000);
                 socket.emit('login', {loginName:u, password:p}, res => {
-                    clearTimeout(timeout); // C'est bon, le serveur a répondu !
-                    if(res.success) { 
-                        myUser=res.userData; 
-                        document.getElementById('login-screen').style.display='none'; 
-                        updateUI(); applyTheme(myUser.themeColor); 
-                    } else { 
-                        document.getElementById('login-error').textContent=res.message; 
-                        document.getElementById('login-error').style.display='block'; 
-                        document.getElementById('login-btn').textContent = "Se connecter";
-                    }
+                    clearTimeout(timeout);
+                    if(res.success) { myUser=res.userData; document.getElementById('login-screen').style.display='none'; updateUI(); applyTheme(myUser.themeColor); } 
+                    else { document.getElementById('login-error').textContent=res.message; document.getElementById('login-error').style.display='block'; document.getElementById('login-btn').textContent = "Se connecter"; }
                 });
             }
         };
 
-        // UI & Amis
         socket.on('online users', users => {
             const list = document.getElementById('online-users-list'); list.innerHTML='';
             users.forEach(u => {
                 if(u._id !== myUser.id) {
-                    const rID = [myUser.id, u._id].sort().join('_');
-                    let unread = unreadCounts[rID] || 0;
+                    const rID = [myUser.id, u._id].sort().join('_'); let unread = unreadCounts[rID] || 0;
                     let div = document.createElement('div'); div.className='channel-item';
                     div.innerHTML = `<div class="channel-avatar"><div class="status-dot status-${u.status}"></div></div> ${u.displayName} <div class="notification-badge" id="badge-${rID}" style="display:${unread>0?'block':'none'}">${unread}</div>`;
                     setAvatar(div.querySelector('.channel-avatar'), u.displayName, u.avatar);
-                    div.onclick = () => switchRoom(rID, u.displayName);
-                    list.appendChild(div);
+                    div.onclick = () => switchRoom(rID, u.displayName); list.appendChild(div);
                 }
             });
         });
@@ -287,10 +279,11 @@
             document.getElementById('messages').innerHTML='';
             document.getElementById('chat-title').innerHTML = rID==='general' ? '🌐 # discussions' : `💬 MP avec ${targetName}`;
             document.getElementById('start-call-btn').style.display = rID==='general' ? 'none' : 'flex';
+            document.querySelectorAll('.channel-item').forEach(el => el.classList.remove('active'));
+            event && event.currentTarget ? event.currentTarget.classList.add('active') : document.getElementById('btn-room-general').classList.add('active');
             socket.emit('join room', rID);
         }
 
-        // Messages & Notifs
         document.getElementById('form').onsubmit = (e) => { e.preventDefault(); const input=document.getElementById('input'); if(input.value){ socket.emit('chat message', {room:currentRoom, text:input.value}); input.value=''; } };
         socket.on('chat history', data => { if(data.room===currentRoom) { document.getElementById('messages').innerHTML=''; data.history.forEach(displayMessage); }});
         socket.on('chat message', data => { if(data.room===currentRoom) displayMessage(data.message); });
@@ -301,7 +294,7 @@
                     unreadCounts[data.room] = (unreadCounts[data.room]||0)+1;
                     if(document.getElementById(`badge-${data.room}`)) { document.getElementById(`badge-${data.room}`).textContent=unreadCounts[data.room]; document.getElementById(`badge-${data.room}`).style.display='block'; }
                     if(appPrefs.sound) notifSound.play().catch(()=>{});
-                    if(appPrefs.desktop && document.hidden) new Notification(`Nouveau message de ${data.authorName}`, { body: data.text });
+                    if(appPrefs.desktop && document.hidden) new Notification(`Message de ${data.authorName}`, { body: data.text });
                 }
             }
         });
@@ -313,35 +306,19 @@
             document.getElementById('messages').appendChild(div); document.getElementById('messages').scrollTop=document.getElementById('messages').scrollHeight;
         }
 
-        function openSettings(tab) {
-            document.getElementById('settings-screen').style.display='block';
-            document.querySelectorAll('.settings-content').forEach(e=>e.classList.remove('active'));
-            document.querySelectorAll('.settings-item').forEach(e=>e.classList.remove('active'));
-            document.getElementById(`tab-${tab}`).classList.add('active');
-            document.getElementById(`nav-${tab}`).classList.add('active');
-        }
+        function openSettings(tab) { document.getElementById('settings-screen').style.display='block'; document.querySelectorAll('.settings-content').forEach(e=>e.classList.remove('active')); document.querySelectorAll('.settings-item').forEach(e=>e.classList.remove('active')); document.getElementById(`tab-${tab}`).classList.add('active'); document.getElementById(`nav-${tab}`).classList.add('active'); }
         function closeSettings() { document.getElementById('settings-screen').style.display='none'; }
         document.getElementById('logout-btn').onclick = () => location.reload();
 
         function updateUI() {
-            document.getElementById('nav-username').textContent=myUser.displayName;
-            setAvatar(document.getElementById('nav-avatar'), myUser.displayName, myUser.avatar);
-            document.getElementById('nav-status').className = `status-dot status-${myUser.status}`;
-            document.getElementById('status-select').value = myUser.status;
-            
-            document.getElementById('settings-display-name').textContent=myUser.displayName;
-            document.getElementById('settings-bio-text').textContent=myUser.bio;
+            document.getElementById('nav-username').textContent=myUser.displayName; setAvatar(document.getElementById('nav-avatar'), myUser.displayName, myUser.avatar);
+            document.getElementById('nav-status').className = `status-dot status-${myUser.status}`; document.getElementById('status-select').value = myUser.status;
+            document.getElementById('settings-display-name').textContent=myUser.displayName; document.getElementById('settings-bio-text').textContent=myUser.bio;
             setAvatar(document.getElementById('settings-avatar'), myUser.displayName, myUser.avatar);
-            
-            document.getElementById('input-displayname').value=myUser.displayName;
-            document.getElementById('input-bio').value=myUser.bio;
-            document.getElementById('theme-color-picker').value=myUser.themeColor;
+            document.getElementById('input-displayname').value=myUser.displayName; document.getElementById('input-bio').value=myUser.bio; document.getElementById('theme-color-picker').value=myUser.themeColor;
         }
 
-        document.getElementById('status-select').onchange = (e) => {
-            myUser.status = e.target.value;
-            socket.emit('update profile', { status: myUser.status }, () => updateUI());
-        };
+        document.getElementById('status-select').onchange = (e) => { myUser.status = e.target.value; socket.emit('update profile', { status: myUser.status }, () => updateUI()); };
 
         function saveSetting(field) {
             let val = document.getElementById(`input-${field==='displayName'?'displayname':field}`).value;
@@ -353,53 +330,23 @@
         document.getElementById('avatar-upload').onchange = async (e) => {
             const f=e.target.files[0]; if(!f) return;
             const fd = new FormData(); fd.append('avatar', f);
-            try { 
-                const res = await fetch('https://aurora-chat-server.onrender.com/upload-avatar', {method:'POST',body:fd}); 
-                const data = await res.json();
+            try { const res = await fetch('https://aurora-chat-server.onrender.com/upload-avatar', {method:'POST',body:fd}); const data = await res.json();
                 if(data.success) socket.emit('update profile', {avatar:data.url}, r => { if(r.success) { myUser=r.userData; updateUI(); } });
             } catch(e){ alert("Erreur upload"); }
         };
 
         function applyTheme(color) { document.documentElement.style.setProperty('--brand-experiment', color); }
-        function saveTheme() {
-            const col = document.getElementById('theme-color-picker').value;
-            applyTheme(col);
-            socket.emit('update profile', { themeColor: col }, res => { if(res.success) myUser=res.userData; });
-        }
+        function saveTheme() { const col = document.getElementById('theme-color-picker').value; applyTheme(col); socket.emit('update profile', { themeColor: col }, res => { if(res.success) myUser=res.userData; }); }
 
-        function saveAppPrefs() {
-            appPrefs.sound = document.getElementById('toggle-sound').checked;
-            appPrefs.desktop = document.getElementById('toggle-desktop').checked;
-            localStorage.setItem('auroraPrefs', JSON.stringify(appPrefs));
-        }
-        function enableDesktopNotifs() {
-            if(document.getElementById('toggle-desktop').checked) {
-                Notification.requestPermission().then(p => {
-                    if(p !== 'granted') { alert("Vous devez autoriser les notifications dans Windows !"); document.getElementById('toggle-desktop').checked=false; }
-                    saveAppPrefs();
-                });
-            } else saveAppPrefs();
-        }
+        function saveAppPrefs() { appPrefs.sound = document.getElementById('toggle-sound').checked; appPrefs.desktop = document.getElementById('toggle-desktop').checked; localStorage.setItem('auroraPrefs', JSON.stringify(appPrefs)); }
+        function enableDesktopNotifs() { if(document.getElementById('toggle-desktop').checked) { Notification.requestPermission().then(p => { if(p !== 'granted') { alert("Autorisez les notifications Windows !"); document.getElementById('toggle-desktop').checked=false; } saveAppPrefs(); }); } else saveAppPrefs(); }
 
         let audioCtx, analyser, dataArray, micTesting=false, animId;
         async function toggleMicTest() {
             const btn = document.getElementById('btn-test-mic');
             if(micTesting) { micTesting=false; cancelAnimationFrame(animId); document.getElementById('mic-level').style.width='0%'; btn.textContent="Commencer le test"; return; }
-            try {
-                const stream = await navigator.mediaDevices.getUserMedia({audio:true});
-                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-                analyser = audioCtx.createAnalyser();
-                audioCtx.createMediaStreamSource(stream).connect(analyser);
-                dataArray = new Uint8Array(analyser.frequencyBinCount);
-                micTesting=true; btn.textContent="Arrêter le test";
-                function draw() {
-                    if(!micTesting) return;
-                    analyser.getByteTimeDomainData(dataArray);
-                    let sum=0; for(let i=0;i<dataArray.length;i++) sum+=dataArray[i];
-                    let vol = (sum / dataArray.length) / 128.0; 
-                    document.getElementById('mic-level').style.width = Math.min(100, vol*100) + '%';
-                    animId = requestAnimationFrame(draw);
-                } draw();
+            try { const stream = await navigator.mediaDevices.getUserMedia({audio:true}); audioCtx = new (window.AudioContext || window.webkitAudioContext)(); analyser = audioCtx.createAnalyser(); audioCtx.createMediaStreamSource(stream).connect(analyser); dataArray = new Uint8Array(analyser.frequencyBinCount); micTesting=true; btn.textContent="Arrêter le test";
+                function draw() { if(!micTesting) return; analyser.getByteTimeDomainData(dataArray); let sum=0; for(let i=0;i<dataArray.length;i++) sum+=dataArray[i]; let vol = (sum / dataArray.length) / 128.0; document.getElementById('mic-level').style.width = Math.min(100, vol*100) + '%'; animId = requestAnimationFrame(draw); } draw();
             } catch(e) { alert("Micro introuvable !"); }
         }
 
@@ -407,26 +354,10 @@
         async function toggleCall() {
             const b = document.getElementById('start-call-btn');
             if(isCall) { if(pc)pc.close(); if(ls)ls.getTracks().forEach(t=>t.stop()); isCall=false; b.textContent='📞 Appeler'; b.classList.remove('active'); }
-            else {
-                try { ls = await navigator.mediaDevices.getUserMedia({audio:true}); } catch(e){ return alert("Pas de micro"); }
-                isCall=true; b.textContent='🔴 Raccrocher'; b.classList.add('active');
-                pc = new RTCPeerConnection(cfg); ls.getTracks().forEach(t=>pc.addTrack(t,ls));
-                pc.ontrack=e=>document.getElementById('remote-audio').srcObject=e.streams[0];
-                pc.onicecandidate=e=>{if(e.candidate)socket.emit('webrtc-ice-candidate',{room:currentRoom,candidate:e.candidate})};
-                const o = await pc.createOffer(); await pc.setLocalDescription(o); socket.emit('webrtc-offer',{room:currentRoom,offer:o});
-            }
+            else { try { ls = await navigator.mediaDevices.getUserMedia({audio:true}); } catch(e){ return alert("Pas de micro"); } isCall=true; b.textContent='🔴 Raccrocher'; b.classList.add('active'); pc = new RTCPeerConnection(cfg); ls.getTracks().forEach(t=>pc.addTrack(t,ls)); pc.ontrack=e=>document.getElementById('remote-audio').srcObject=e.streams[0]; pc.onicecandidate=e=>{if(e.candidate)socket.emit('webrtc-ice-candidate',{room:currentRoom,candidate:e.candidate})}; const o = await pc.createOffer(); await pc.setLocalDescription(o); socket.emit('webrtc-offer',{room:currentRoom,offer:o}); }
         }
         socket.on('webrtc-offer', d => { if(d.room===currentRoom){ pOff=d.offer; document.getElementById('call-modal').style.display='block'; }});
-        async function acceptCall() {
-            document.getElementById('call-modal').style.display='none';
-            try { ls = await navigator.mediaDevices.getUserMedia({audio:true}); } catch(e){return;}
-            isCall=true; document.getElementById('start-call-btn').textContent='🔴 Raccrocher'; document.getElementById('start-call-btn').classList.add('active');
-            pc = new RTCPeerConnection(cfg); ls.getTracks().forEach(t=>pc.addTrack(t,ls));
-            pc.ontrack=e=>document.getElementById('remote-audio').srcObject=e.streams[0];
-            pc.onicecandidate=e=>{if(e.candidate)socket.emit('webrtc-ice-candidate',{room:currentRoom,candidate:e.candidate})};
-            await pc.setRemoteDescription(new RTCSessionDescription(pOff));
-            const a = await pc.createAnswer(); await pc.setLocalDescription(a); socket.emit('webrtc-answer',{room:currentRoom,answer:a});
-        }
+        async function acceptCall() { document.getElementById('call-modal').style.display='none'; try { ls = await navigator.mediaDevices.getUserMedia({audio:true}); } catch(e){return;} isCall=true; document.getElementById('start-call-btn').textContent='🔴 Raccrocher'; document.getElementById('start-call-btn').classList.add('active'); pc = new RTCPeerConnection(cfg); ls.getTracks().forEach(t=>pc.addTrack(t,ls)); pc.ontrack=e=>document.getElementById('remote-audio').srcObject=e.streams[0]; pc.onicecandidate=e=>{if(e.candidate)socket.emit('webrtc-ice-candidate',{room:currentRoom,candidate:e.candidate})}; await pc.setRemoteDescription(new RTCSessionDescription(pOff)); const a = await pc.createAnswer(); await pc.setLocalDescription(a); socket.emit('webrtc-answer',{room:currentRoom,answer:a}); }
         function rejectCall() { document.getElementById('call-modal').style.display='none'; pOff=null; }
         socket.on('webrtc-answer', async d => { if(pc) await pc.setRemoteDescription(new RTCSessionDescription(d.answer)); });
         socket.on('webrtc-ice-candidate', async d => { if(pc) try{await pc.addIceCandidate(new RTCIceCandidate(d.candidate));}catch(e){} });

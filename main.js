@@ -1,40 +1,41 @@
-const { app, BrowserWindow, dialog } = require('electron');
-const path = require('path');
+const { app, BrowserWindow } = require('electron');
 const { autoUpdater } = require('electron-updater');
 
+let mainWindow;
+
 function createWindow() {
-  const win = new BrowserWindow({
-    width: 1000,
-    height: 700,
-    autoHideMenuBar: true,
-    icon: path.join(__dirname, 'public/favicon.ico')
+  mainWindow = new BrowserWindow({
+    width: 1200,
+    height: 800,
+    minWidth: 800,
+    minHeight: 600,
+    autoHideMenuBar: true, // 🌟 CACHE LE MENU MOCHE EN HAUT
+    webPreferences: {
+      nodeIntegration: true
+    }
   });
 
-  // On se connecte DIRECTEMENT au serveur en ligne (Render)
-  win.loadURL('https://aurora-chat-server-1.onrender.com');
+  // On charge directement l'URL de Render (Ton serveur en ligne)
+  mainWindow.loadURL('https://aurora-chat-server.onrender.com');
 
-  // Dès que l'application démarre, elle cherche s'il y a une mise à jour sur GitHub
+  // Vérifie les mises à jour silencieusement
   autoUpdater.checkForUpdatesAndNotify();
 }
 
-app.whenReady().then(() => {
-  createWindow();
-
-  app.on('activate', () => {
-    if (BrowserWindow.getAllWindows().length === 0) createWindow();
-  });
-});
+app.whenReady().then(createWindow);
 
 app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') app.quit();
 });
 
-// --- ÉVÈNEMENTS DE MISE �� JOUR AUTOMATIQUE ---
-autoUpdater.on('update-available', () => {
-  console.log("Une mise à jour est disponible, téléchargement en cours...");
+app.on('activate', () => {
+  if (BrowserWindow.getAllWindows().length === 0) createWindow();
 });
 
+// Notifications de mise à jour
+autoUpdater.on('update-available', () => {
+  console.log('Mise à jour disponible !');
+});
 autoUpdater.on('update-downloaded', () => {
-  // Quand la mise à jour est téléchargée, l'application redémarre toute seule pour l'installer
   autoUpdater.quitAndInstall();
 });

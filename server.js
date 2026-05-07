@@ -11,7 +11,7 @@ const multer = require('multer');
 const app = express();
 const server = http.createServer(app);
 
-// 🔓 AUTORISER L'APPLICATION PC A SE CONNECTER
+// 🔓 Autoriser l'application PC (CORS)
 app.use((req, res, next) => {
   res.header("Access-Control-Allow-Origin", "*");
   res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
@@ -19,11 +19,12 @@ app.use((req, res, next) => {
 });
 
 const io = new Server(server, {
-  cors: { origin: "*", methods: ["GET", "POST"] } // Débloque Socket.io
+  cors: { origin: "*", methods: ["GET", "POST"] }
 });
 
 app.use(express.static('public'));
 
+// ☁️ Configuration Cloudinary (Images)
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
   api_key: process.env.CLOUDINARY_API_KEY,
@@ -36,10 +37,12 @@ const storage = new CloudinaryStorage({
 });
 const upload = multer({ storage: storage });
 
+// 🗄️ Connexion Base de données
 mongoose.connect(process.env.MONGO_URI)
   .then(() => console.log('✅ Connecté à MongoDB Atlas !'))
   .catch(err => console.log('❌ Erreur MongoDB:', err));
 
+// 📝 Modèles de données
 const UserSchema = new mongoose.Schema({
   login: { type: String, unique: true },
   password: { type: String },
@@ -59,11 +62,13 @@ const MessageSchema = new mongoose.Schema({
 });
 const Message = mongoose.model('Message', MessageSchema);
 
+// 📡 Routes API
 app.post('/upload-avatar', upload.single('avatar'), (req, res) => {
   if (req.file && req.file.path) res.json({ success: true, url: req.file.path });
   else res.status(500).json({ success: false });
 });
 
+// 🔌 Logique Temps Réel (Socket.io)
 io.on('connection', (socket) => {
   let currentUserId = null;
 
@@ -128,6 +133,7 @@ io.on('connection', (socket) => {
     }
   });
 
+  // Appels WebRTC
   socket.on('webrtc-offer', (data) => socket.to(data.room).emit('webrtc-offer', data));
   socket.on('webrtc-answer', (data) => socket.to(data.room).emit('webrtc-answer', data));
   socket.on('webrtc-ice-candidate', (data) => socket.to(data.room).emit('webrtc-ice-candidate', data));
