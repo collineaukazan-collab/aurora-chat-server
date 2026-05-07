@@ -4,20 +4,14 @@
     <meta charset="UTF-8">
     <title>Aurora Chat</title>
     <style>
-        :root {
-            --bg-tertiary: #1e1f22; --bg-secondary: #2b2d31; --bg-primary: #313338;
-            --bg-message-hover: #2e3035; --bg-modifier-hover: #35373c;
-            --text-normal: #dbdee1; --text-muted: #80848e; --brand-experiment: #5865F2;
-            --red-danger: #da373c; --profile-card: #232428;
-        }
-
+        :root { --bg-tertiary: #1e1f22; --bg-secondary: #2b2d31; --bg-primary: #313338; --bg-message-hover: #2e3035; --bg-modifier-hover: #35373c; --text-normal: #dbdee1; --text-muted: #80848e; --brand-experiment: #5865F2; --green-success: #23a559; --red-danger: #da373c; --profile-card: #232428; }
         body { font-family: 'Segoe UI', Tahoma, sans-serif; margin: 0; padding: 0; display: flex; height: 100vh; background-color: var(--bg-primary); color: var(--text-normal); overflow: hidden; }
         
         /* LOGIN */
         #login-screen { position: absolute; inset: 0; background-color: var(--bg-primary); display: flex; justify-content: center; align-items: center; z-index: 2000; }
         .login-box { background-color: var(--bg-secondary); padding: 32px; border-radius: 8px; width: 400px; text-align: center; }
         .login-box h2 { color: white; margin: 0 0 8px 0; }
-        .login-box input { width: 100%; padding: 10px; margin-bottom: 15px; border-radius: 4px; border: none; background-color: var(--bg-tertiary); color: white; outline: none; box-sizing: border-box; }
+        .login-box input { width: 100%; padding: 10px; margin-bottom: 15px; border-radius: 4px; border: none; background-color: var(--bg-tertiary); color: white; outline: none; }
         .login-box button { width: 100%; padding: 10px; background-color: var(--brand-experiment); color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; }
         #login-error { color: var(--red-danger); font-size: 13px; margin-bottom: 10px; display: none; }
 
@@ -30,20 +24,25 @@
         .sidebar { width: 240px; background-color: var(--bg-secondary); display: flex; flex-direction: column; }
         .channel-list { padding: 10px; flex-grow: 1; overflow-y: auto; }
         .channel-category { color: var(--text-muted); font-size: 12px; font-weight: bold; text-transform: uppercase; margin: 15px 0 5px 5px; }
-        .channel-item { padding: 6px 8px; border-radius: 4px; cursor: pointer; color: var(--text-muted); display: flex; align-items: center; gap: 10px; margin-bottom: 2px;}
+        .channel-item { padding: 6px 8px; border-radius: 4px; cursor: pointer; color: var(--text-muted); display: flex; align-items: center; gap: 10px; margin-bottom: 2px; position: relative;}
         .channel-item:hover, .channel-item.active { background-color: var(--bg-modifier-hover); color: white; }
         .channel-avatar { width: 32px; height: 32px; border-radius: 50%; background-size: cover; background-position: center; display: flex; justify-content: center; align-items: center; color: white; font-weight: bold;}
+        .notification-badge { background-color: var(--red-danger); color: white; font-size: 10px; font-weight: bold; padding: 2px 6px; border-radius: 10px; position: absolute; right: 10px; display: none; }
 
-        /* PANNEAU UTILISATEUR */
         .user-panel { background-color: #232428; padding: 0 8px; height: 52px; display: flex; align-items: center; gap: 8px; }
         .user-panel-avatar { width: 32px; height: 32px; border-radius: 50%; background-size: cover; background-position: center; display: flex; justify-content: center; align-items: center; color: white; font-weight: bold;}
         .user-info { flex-grow: 1; overflow: hidden; }
         .user-info .username { color: white; font-weight: bold; font-size: 14px; }
         .btn-icon { background: transparent; border: none; color: var(--text-muted); cursor: pointer; font-size: 18px; padding: 5px; }
+        .btn-icon:hover { color: white; }
 
-        /* CHAT */
+        /* CHAT & APPELS */
         .chat { flex-grow: 1; display: flex; flex-direction: column; background-color: var(--bg-primary); }
-        .chat-header { height: 48px; padding: 0 16px; border-bottom: 1px solid #1f2023; display: flex; align-items: center; font-weight: bold; color: white; gap: 10px; }
+        .chat-header { height: 48px; padding: 0 16px; border-bottom: 1px solid #1f2023; display: flex; align-items: center; justify-content: space-between; font-weight: bold; color: white; box-shadow: 0 1px 2px rgba(0,0,0,0.1);}
+        .header-title { display: flex; align-items: center; gap: 10px; }
+        .call-btn { background-color: var(--green-success); color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-weight: bold; display: none; display: flex; gap: 6px; align-items: center; }
+        .call-btn.active { background-color: var(--red-danger); }
+        
         #messages { flex-grow: 1; overflow-y: auto; padding: 16px 0; }
         .message { display: flex; gap: 16px; padding: 2px 16px 2px 72px; position: relative; margin-top: 17px; }
         .message:hover { background-color: var(--bg-message-hover); }
@@ -58,37 +57,39 @@
         .input-wrapper { display: flex; align-items: center; background-color: #383a40; border-radius: 8px; padding: 0 16px; min-height: 44px; }
         #input { flex-grow: 1; background: transparent; border: none; color: white; outline: none; font-size: 16px; padding: 11px 0; }
         
-        /* PARAMÈTRES (CORRECTION DU BUG VISUEL) */
+        /* PARAMÈTRES */
         #settings-screen { position: absolute; inset: 0; background-color: var(--bg-primary); display: none; z-index: 1000; }
         .settings-sidebar { width: 30%; background-color: var(--bg-secondary); display: flex; justify-content: flex-end; padding-top: 60px; }
         .settings-nav { width: 220px; padding: 0 20px; }
         .settings-item { padding: 8px 10px; color: #b5bac1; border-radius: 4px; cursor: pointer; margin-bottom: 2px;}
         .settings-item.active { background-color: var(--bg-modifier-hover); color: white; }
-        
         .settings-content { width: 70%; padding: 60px 40px; overflow-y: auto; position: relative;}
         .close-settings { position: absolute; top: 40px; right: 40px; width: 36px; height: 36px; border: 2px solid var(--text-muted); border-radius: 50%; display: flex; justify-content: center; align-items: center; color: var(--text-muted); cursor: pointer; }
+        .close-settings:hover { border-color: white; color: white;}
 
         .profile-card { background-color: var(--profile-card); border-radius: 8px; margin-bottom: 40px; }
         .profile-banner { height: 100px; background-color: #5865F2; border-radius: 8px 8px 0 0;}
-        /* CORRECTION DU BUG ICI */
         .profile-header { padding: 16px; display: flex; justify-content: flex-end; position: relative; height: 35px;}
         .profile-avatar-large { width: 100px; height: 100px; border-radius: 50%; border: 6px solid var(--profile-card); position: absolute; top: -50px; left: 16px; background-color: var(--bg-primary); background-size: cover; background-position: center; display: flex; justify-content: center; align-items: center; font-size: 40px; color: white; font-weight: bold; z-index: 10;}
-        
         .profile-names { padding: 0 16px 20px 16px;}
         .btn-primary { background-color: var(--brand-experiment); color: white; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer; }
         .info-list { background-color: var(--bg-primary); border-radius: 8px; padding: 16px; margin: 0 16px 16px 16px; }
         .info-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .settings-input { background-color: var(--bg-tertiary); border: none; color: white; padding: 8px; border-radius: 4px; outline: none; display: none; width: 200px;}
         .btn-secondary { background-color: #4e5058; color: white; border: none; padding: 6px 16px; border-radius: 4px; cursor: pointer; }
+        .save-btn { background-color: var(--green-success); display: none; }
+        
+        /* Modal Appel entrant */
+        #call-modal { position: absolute; top: 20px; right: 20px; background: var(--bg-secondary); padding: 15px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.5); z-index: 3000; display: none; border: 1px solid var(--brand-experiment); }
     </style>
 </head>
 <body>
 
-    <!-- Écran de connexion (Mot de passe ajouté) -->
     <div id="login-screen">
         <div class="login-box">
-            <h2>Te revoilà !</h2>
+            <h2>Bienvenue sur Aurora</h2>
             <div id="login-error"></div>
-            <input type="text" id="login-username" placeholder="Nom d'utilisateur" autocomplete="off" />
+            <input type="text" id="login-username" placeholder="Identifiant" autocomplete="off" />
             <input type="password" id="login-password" placeholder="Mot de passe" autocomplete="off" />
             <button id="login-btn">Se connecter / S'inscrire</button>
         </div>
@@ -105,25 +106,25 @@
             <div class="channel-category">Général</div>
             <div class="channel-item active" id="btn-room-general" onclick="switchRoom('general')"># discussions</div>
             
-            <div class="channel-category" style="margin-top: 25px;">Utilisateurs en ligne (MP)</div>
-            <div id="online-users-list">
-                <!-- Les amis apparaîtront ici -->
-            </div>
+            <div class="channel-category" style="margin-top: 25px;">Amis en ligne</div>
+            <div id="online-users-list"></div>
         </div>
         
-        <!-- Panneau Utilisateur -->
         <div class="user-panel">
             <div class="user-panel-avatar" id="nav-avatar"></div>
             <div class="user-info">
                 <div class="username" id="nav-username">...</div>
-                <div style="color: #23a559; font-size: 12px;">En ligne</div>
+                <div style="color: var(--green-success); font-size: 12px;">En ligne</div>
             </div>
             <button class="btn-icon" id="open-settings-btn" title="Paramètres">⚙️</button>
         </div>
     </div>
 
     <div class="chat">
-        <div class="chat-header" id="chat-title">🌐 # discussions</div>
+        <div class="chat-header">
+            <div class="header-title" id="chat-title">🌐 # discussions</div>
+            <button class="call-btn" id="start-call-btn" onclick="toggleCall()" style="display: none;">📞 Appeler</button>
+        </div>
         <div id="messages"></div>
         <div class="input-area">
             <div class="input-wrapper">
@@ -133,6 +134,17 @@
             </div>
         </div>
     </div>
+
+    <!-- Modal Appel -->
+    <div id="call-modal">
+        <div style="color: white; font-weight: bold; margin-bottom: 10px;">📞 Appel entrant...</div>
+        <div style="display: flex; gap: 10px;">
+            <button class="btn-primary" style="background-color: var(--green-success);" onclick="acceptCall()">Répondre</button>
+            <button class="btn-primary" style="background-color: var(--red-danger);" onclick="rejectCall()">Ignorer</button>
+        </div>
+    </div>
+
+    <audio id="remote-audio" autoplay></audio>
 
     <!-- PARAMÈTRES -->
     <div id="settings-screen">
@@ -151,7 +163,8 @@
                 <div class="profile-banner"></div>
                 <div class="profile-header">
                     <div class="profile-avatar-large" id="settings-avatar"></div>
-                    <button class="btn-primary" id="edit-avatar-btn">Modifier l'avatar</button>
+                    <label for="avatar-upload" class="btn-primary" style="cursor: pointer; line-height: 18px;">Changer d'avatar</label>
+                    <input type="file" id="avatar-upload" accept="image/*" style="display: none;">
                 </div>
                 <div class="profile-names">
                     <div style="color: white; font-size: 20px; font-weight: bold;" id="settings-display-name">...</div>
@@ -161,10 +174,25 @@
                 <div class="info-list">
                     <div class="info-row">
                         <div>
-                            <div style="color: var(--text-muted); font-size: 12px; font-weight: bold;">NOM D'UTILISATEUR</div>
-                            <div style="color: white;" id="info-username">...</div>
+                            <div style="color: var(--text-muted); font-size: 12px; font-weight: bold;">NOM D'AFFICHAGE</div>
+                            <div style="color: white;" id="info-displayname">...</div>
+                            <input type="text" id="input-displayname" class="settings-input">
                         </div>
-                        <button class="btn-secondary" onclick="alert('Cette version ne permet pas de changer le pseudo !')">Modifier</button>
+                        <div>
+                            <button class="btn-secondary" id="btn-edit-name" onclick="toggleEdit('name')">Modifier</button>
+                            <button class="btn-secondary save-btn" id="btn-save-name" onclick="saveSetting('name')">Enregistrer</button>
+                        </div>
+                    </div>
+                    <div class="info-row">
+                        <div>
+                            <div style="color: var(--text-muted); font-size: 12px; font-weight: bold;">MOT DE PASSE</div>
+                            <div style="color: white;" id="info-password">********</div>
+                            <input type="password" id="input-password" class="settings-input" placeholder="Nouveau mot de passe">
+                        </div>
+                        <div>
+                            <button class="btn-secondary" id="btn-edit-pwd" onclick="toggleEdit('password')">Modifier</button>
+                            <button class="btn-secondary save-btn" id="btn-save-pwd" onclick="saveSetting('password')">Enregistrer</button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -176,6 +204,102 @@
         var socket = io();
         var myUser = null;
         var currentRoom = 'general';
+        var unreadCounts = {};
+
+        // --- WEBRTC (Appels Vocaux) ---
+        let peerConnection;
+        let localStream;
+        let isCalling = false;
+        const config = { iceServers: [{ urls: 'stun:stun.l.google.com:19302' }] };
+        let pendingOffer = null;
+
+        async function setupMedia() {
+            try {
+                localStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                return true;
+            } catch (err) {
+                alert("Impossible d'accéder au microphone !");
+                return false;
+            }
+        }
+
+        async function toggleCall() {
+            const btn = document.getElementById('start-call-btn');
+            if (isCalling) {
+                // Raccrocher
+                if(peerConnection) peerConnection.close();
+                if(localStream) localStream.getTracks().forEach(t => t.stop());
+                isCalling = false;
+                btn.textContent = '📞 Appeler';
+                btn.classList.remove('active');
+            } else {
+                // Appeler
+                if(!await setupMedia()) return;
+                isCalling = true;
+                btn.textContent = '🔴 Raccrocher';
+                btn.classList.add('active');
+
+                peerConnection = new RTCPeerConnection(config);
+                localStream.getTracks().forEach(track => peerConnection.addTrack(track, localStream));
+                
+                peerConnection.ontrack = (event) => {
+                    document.getElementById('remote-audio').srcObject = event.streams[0];
+                };
+
+                peerConnection.onicecandidate = (event) => {
+                    if (event.candidate) socket.emit('webrtc-ice-candidate', { room: currentRoom, candidate: event.candidate });
+                };
+
+                const offer = await peerConnection.createOffer();
+                await peerConnection.setLocalDescription(offer);
+                socket.emit('webrtc-offer', { room: currentRoom, offer: offer });
+            }
+        }
+
+        socket.on('webrtc-offer', async (data) => {
+            if (data.room !== currentRoom) return; // Ignore si pas dans le même salon
+            pendingOffer = data.offer;
+            document.getElementById('call-modal').style.display = 'block';
+        });
+
+        async function acceptCall() {
+            document.getElementById('call-modal').style.display = 'none';
+            if(!await setupMedia()) return;
+            
+            isCalling = true;
+            const btn = document.getElementById('start-call-btn');
+            btn.textContent = '🔴 Raccrocher';
+            btn.classList.add('active');
+
+            peerConnection = new RTCPeerConnection(config);
+            localStream.getTracks().forEach(track => peerConnection.addTrack(track, localStream));
+            
+            peerConnection.ontrack = (event) => document.getElementById('remote-audio').srcObject = event.streams[0];
+            peerConnection.onicecandidate = (event) => {
+                if (event.candidate) socket.emit('webrtc-ice-candidate', { room: currentRoom, candidate: event.candidate });
+            };
+
+            await peerConnection.setRemoteDescription(new RTCSessionDescription(pendingOffer));
+            const answer = await peerConnection.createAnswer();
+            await peerConnection.setLocalDescription(answer);
+            socket.emit('webrtc-answer', { room: currentRoom, answer: answer });
+        }
+
+        function rejectCall() {
+            document.getElementById('call-modal').style.display = 'none';
+            pendingOffer = null;
+        }
+
+        socket.on('webrtc-answer', async (data) => {
+            if (peerConnection) await peerConnection.setRemoteDescription(new RTCSessionDescription(data.answer));
+        });
+
+        socket.on('webrtc-ice-candidate', async (data) => {
+            if (peerConnection) {
+                try { await peerConnection.addIceCandidate(new RTCIceCandidate(data.candidate)); } catch(e){}
+            }
+        });
+        // --- FIN WEBRTC ---
 
         function stringToColor(str) {
             let hash = 0; for (let i = 0; i < str.length; i++) hash = str.charCodeAt(i) + ((hash << 5) - hash);
@@ -189,67 +313,72 @@
                 element.textContent = '';
             } else {
                 element.style.backgroundImage = 'none';
-                element.style.backgroundColor = stringToColor(name);
-                element.textContent = name.charAt(0).toUpperCase();
+                element.style.backgroundColor = stringToColor(name || '?');
+                element.textContent = name ? name.charAt(0).toUpperCase() : '?';
             }
         }
 
-        // --- CONNEXION ---
         document.getElementById('login-btn').addEventListener('click', () => {
             const u = document.getElementById('login-username').value;
             const p = document.getElementById('login-password').value;
             if (u && p) {
-                socket.emit('login', { username: u, password: p }, (res) => {
+                socket.emit('login', { loginName: u, password: p }, (res) => {
                     if (res.success) {
-                        myUser = { username: u, ...res.userData };
+                        myUser = res.userData;
                         document.getElementById('login-screen').style.display = 'none';
                         updateProfileUI();
                     } else {
                         const err = document.getElementById('login-error');
-                        err.textContent = res.message;
-                        err.style.display = 'block';
+                        err.textContent = res.message; err.style.display = 'block';
                     }
                 });
             }
         });
 
-        // --- LISTE DES UTILISATEURS (MP) ---
         socket.on('online users', (usersList) => {
             const listDiv = document.getElementById('online-users-list');
             listDiv.innerHTML = '';
             usersList.forEach(u => {
-                if (u !== myUser.username) { // Ne pas s'afficher soi-même
+                if (u._id !== myUser.id) {
+                    const roomID = [myUser.id, u._id].sort().join('_');
+                    let unread = unreadCounts[roomID] || 0;
+                    
                     let div = document.createElement('div');
                     div.className = 'channel-item';
-                    div.innerHTML = `<div class="channel-avatar" style="background-color: ${stringToColor(u)}">${u.charAt(0).toUpperCase()}</div> ${u}`;
-                    div.onclick = () => openDM(u);
+                    div.innerHTML = `
+                        <div class="channel-avatar"></div> 
+                        ${u.displayName}
+                        <div class="notification-badge" id="badge-${roomID}" style="display: ${unread > 0 ? 'block' : 'none'}">${unread}</div>
+                    `;
+                    setAvatar(div.querySelector('.channel-avatar'), u.displayName, u.avatar);
+                    div.onclick = () => switchRoom(roomID, u.displayName);
                     listDiv.appendChild(div);
                 }
             });
         });
 
-        // --- GESTION DES SALONS (DMs) ---
-        function openDM(targetUser) {
-            // Crée un ID unique pour le salon (les deux noms triés par ordre alphabétique)
-            const roomID = [myUser.username, targetUser].sort().join('_');
-            switchRoom(roomID, targetUser);
-        }
-
         function switchRoom(roomID, targetName = null) {
-            currentRoom = roomID;
-            document.getElementById('messages').innerHTML = ''; // Vide l'écran
-            
-            // UI : Change le titre
-            if (roomID === 'general') {
-                document.getElementById('chat-title').textContent = '🌐 # discussions';
-            } else {
-                document.getElementById('chat-title').textContent = `💬 MP avec ${targetName}`;
-            }
+            // Coupe l'appel en cours si on change de salon
+            if(isCalling) toggleCall();
 
+            currentRoom = roomID;
+            unreadCounts[roomID] = 0; 
+            const badge = document.getElementById(`badge-${roomID}`);
+            if(badge) badge.style.display = 'none';
+            
+            document.getElementById('messages').innerHTML = '';
+            
+            if (roomID === 'general') {
+                document.getElementById('chat-title').innerHTML = '🌐 # discussions';
+                document.getElementById('start-call-btn').style.display = 'none'; // Pas d'appel dans le général pour le moment
+            } else {
+                document.getElementById('chat-title').innerHTML = `💬 MP avec ${targetName}`;
+                document.getElementById('start-call-btn').style.display = 'flex'; // Affiche le bouton d'appel
+            }
+            
             socket.emit('join room', roomID);
         }
 
-        // --- MESSAGES ---
         document.getElementById('form').addEventListener('submit', (e) => {
             e.preventDefault();
             const input = document.getElementById('input');
@@ -270,6 +399,17 @@
             if (data.room === currentRoom) displayMessage(data.message);
         });
 
+        socket.on('notification', (data) => {
+            if(data.room !== currentRoom && data.room.includes(myUser.id)) {
+                unreadCounts[data.room] = (unreadCounts[data.room] || 0) + 1;
+                const badge = document.getElementById(`badge-${data.room}`);
+                if(badge) {
+                    badge.textContent = unreadCounts[data.room];
+                    badge.style.display = 'block';
+                }
+            }
+        });
+
         function displayMessage(msg) {
             var msgDiv = document.createElement('div');
             msgDiv.className = 'message';
@@ -277,41 +417,81 @@
                 <div class="msg-avatar"></div>
                 <div class="msg-content">
                     <div class="msg-header">
-                        <span class="msg-author">${msg.author}</span>
+                        <span class="msg-author">${msg.authorName}</span>
                         <span class="msg-time">${msg.time}</span>
                     </div>
                     <span class="msg-text">${msg.text}</span>
                 </div>
             `;
-            setAvatar(msgDiv.querySelector('.msg-avatar'), msg.author, msg.avatar);
+            setAvatar(msgDiv.querySelector('.msg-avatar'), msg.authorName, msg.avatar);
             document.getElementById('messages').appendChild(msgDiv);
             document.getElementById('messages').scrollTop = document.getElementById('messages').scrollHeight;
         }
 
-        // --- PARAMÈTRES ET PROFIL ---
+        // --- PARAMÈTRES ---
         function updateProfileUI() {
-            document.getElementById('nav-username').textContent = myUser.username;
-            setAvatar(document.getElementById('nav-avatar'), myUser.username, myUser.avatar);
+            document.getElementById('nav-username').textContent = myUser.displayName;
+            setAvatar(document.getElementById('nav-avatar'), myUser.displayName, myUser.avatar);
             
-            document.getElementById('settings-display-name').textContent = myUser.username;
+            document.getElementById('settings-display-name').textContent = myUser.displayName;
             document.getElementById('settings-tag').textContent = myUser.tag;
-            document.getElementById('info-username').textContent = myUser.username;
-            setAvatar(document.getElementById('settings-avatar'), myUser.username, myUser.avatar);
+            document.getElementById('info-displayname').textContent = myUser.displayName;
+            setAvatar(document.getElementById('settings-avatar'), myUser.displayName, myUser.avatar);
+            document.getElementById('input-displayname').value = myUser.displayName;
         }
 
         document.getElementById('open-settings-btn').onclick = () => document.getElementById('settings-screen').style.display = 'flex';
         document.getElementById('close-settings-btn').onclick = () => document.getElementById('settings-screen').style.display = 'none';
-        
-        document.getElementById('edit-avatar-btn').onclick = () => {
-            const url = prompt("Entrez l'URL de votre nouvelle image :");
-            if (url !== null) {
-                myUser.avatar = url;
-                socket.emit('update profile', { avatar: url });
-                updateProfileUI();
-            }
-        };
-
         document.getElementById('logout-btn').onclick = () => location.reload();
+
+        function toggleEdit(field) {
+            document.getElementById(`info-${field === 'name' ? 'displayname' : 'password'}`).style.display = 'none';
+            document.getElementById(`input-${field === 'name' ? 'displayname' : 'password'}`).style.display = 'block';
+            document.getElementById(`btn-edit-${field === 'name' ? 'name' : 'pwd'}`).style.display = 'none';
+            document.getElementById(`btn-save-${field === 'name' ? 'name' : 'pwd'}`).style.display = 'inline-block';
+        }
+
+        function saveSetting(field) {
+            const val = document.getElementById(`input-${field === 'name' ? 'displayname' : 'password'}`).value;
+            let updateObj = {};
+            if(field === 'name') updateObj.displayName = val;
+            if(field === 'password') updateObj.password = val;
+
+            socket.emit('update profile', updateObj, (res) => {
+                if(res.success) {
+                    myUser = res.userData;
+                    updateProfileUI();
+                    document.getElementById(`info-${field === 'name' ? 'displayname' : 'password'}`).style.display = 'block';
+                    document.getElementById(`input-${field === 'name' ? 'displayname' : 'password'}`).style.display = 'none';
+                    document.getElementById(`btn-edit-${field === 'name' ? 'name' : 'pwd'}`).style.display = 'inline-block';
+                    document.getElementById(`btn-save-${field === 'name' ? 'name' : 'pwd'}`).style.display = 'none';
+                }
+            });
+        }
+
+        // Upload Cloudinary
+        document.getElementById('avatar-upload').addEventListener('change', async function(e) {
+            const file = e.target.files[0];
+            if(!file) return;
+            
+            const formData = new FormData();
+            formData.append('avatar', file);
+            
+            try {
+                const response = await fetch('/upload-avatar', { method: 'POST', body: formData });
+                const result = await response.json();
+                if(result.success) {
+                    socket.emit('update profile', { avatar: result.url }, (res) => {
+                        if(res.success) {
+                            myUser = res.userData;
+                            updateProfileUI();
+                        }
+                    });
+                }
+            } catch (err) {
+                alert("Erreur lors de l'upload de l'image.");
+            }
+        });
     </script>
 </body>
 </html>

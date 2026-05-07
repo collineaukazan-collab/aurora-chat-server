@@ -1,6 +1,12 @@
+require('dotenv').config();
 const express = require('express');
 const http = require('http');
 const { Server } = require('socket.io');
+const mongoose = require('mongoose');
+const bcrypt = require('bcryptjs');
+const cloudinary = require('cloudinary').v2;
+const { CloudinaryStorage } = require('multer-storage-cloudinary');
+const multer = require('multer');
 
 const app = express();
 const server = http.createServer(app);
@@ -8,91 +14,128 @@ const io = new Server(server);
 
 app.use(express.static('public'));
 
-// Notre Base de données "En mémoire"
-const usersDB = {}; // Stocke: { 'Kazan': { password: '123', avatar: '', tag: 'kazan_888' } }
-const chatHistory = { 'general': [] }; // Stocke les messages par salon. ex: 'general' ou 'DM_Kazan_Xyliox'
-let onlineUsers = new Set(); // Liste des gens connectés
+// --- CONFIGURATION CLOUDINARY ---
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET
+});
 
+const storage = new CloudinaryStorage({
+  cloudinary: cloudinary,
+  params: { folder: 'aurora_avatars', allowed_formats: ['jpg', 'png', 'jpeg', 'gif'] },
+});
+const upload = multer({ storage: storage });
+
+// --- CONFIGURATION MONGODB ---
+mongoose.connect(process.env.MONGO_URI)
+  .then(() => console.log('✅ Connecté à MongoDB Atlas !'))
+  .catch(err => console.log('❌ Erreur MongoDB:', err));
+
+const UserSchema = new mongoose.Schema({
+  login: { type: String, unique: true },
+  password: { type: String },
+  displayName: { type: String },
+  tag: { type: String },
+  avatar: { type: String, default: '' },
+  isOnline: { type: Boolean, default: false }
+});
+const User = mongoose.model('User', UserSchema);
+
+const MessageSchema = new mongoose.Schema({
+  room: { type: String },
+  authorId: { type: String },
+  authorName: { type: String },
+  avatar: { type: String },
+  text: { type: String },
+  time: { type: String },
+  timestamp: { type: Date, default: Date.now }
+});
+const Message = mongoose.model('Message', MessageSchema);
+
+// --- ROUTE UPLOAD AVATAR ---
+app.post('/upload-avatar', upload.single('avatar'), (req, res) => {
+  if (req.file && req.file.path) res.json({ success: true, url: req.file.path });
+  else res.status(500).json({ success: false });
+});
+
+// --- WEBSOCKETS (Chat & Appels Vocaux) ---
 io.on('connection', (socket) => {
-  let currentUser = null;
+  let currentUserId = null;
 
-  // 1. Système de Connexion / Inscription avec Mot de passe
-  socket.on('login', ({ username, password }, callback) => {
-    username = username.trim();
-    
-    // Si l'utilisateur n'existe pas, on le crée (Inscription)
-    if (!usersDB[username]) {
-      usersDB[username] = { 
-        password: password, 
-        avatar: '', 
-        tag: username.toLowerCase() + '_' + Math.floor(1000 + Math.random() * 9000)
-      };
-    } 
-    // S'il existe, on vérifie le mot de passe
-    else if (usersDB[username].password !== password) {
-      return callback({ success: false, message: 'Mot de passe incorrect !' });
+  socket.on('login', async ({ loginName, password }, callback) => {
+    loginName = loginName.toLowerCase().trim();
+    let user = await User.findOne({ login: loginName });
+
+    if (!user) {
+      const hashedPassword = await bcrypt.hash(password, 10);
+      user = new User({
+        login: loginName, password: hashedPassword,
+        displayName: loginName, tag: loginName + '_' + Math.floor(1000 + Math.random() * 9000),
+        isOnline: true
+      });
+      await user.save();
+    } else {
+      const isMatch = await bcrypt.compare(password, user.password);
+      if (!isMatch) return callback({ success: false, message: 'Mot de passe incorrect !' });
+      user.isOnline = true;
+      await user.save();
     }
 
-    // Connexion réussie
-    currentUser = username;
-    socket.username = username;
-    onlineUsers.add(username);
-    socket.join('general'); // Rejoint le serveur public par défaut
-
-    callback({ success: true, userData: usersDB[username] });
+    currentUserId = user._id.toString();
+    socket.join('general');
     
-    // Annonce à tout le monde qui est en ligne
-    io.emit('online users', Array.from(onlineUsers));
-    // Envoie l'historique du salon général
-    socket.emit('chat history', { room: 'general', history: chatHistory['general'] });
+    callback({ success: true, userData: { id: user._id, login: user.login, displayName: user.displayName, tag: user.tag, avatar: user.avatar } });
+
+    const onlineUsers = await User.find({ isOnline: true }, 'displayName avatar _id');
+    io.emit('online users', onlineUsers);
   });
 
-  // 2. Rejoindre un salon privé (MP)
-  socket.on('join room', (roomID) => {
-    // Quitte les autres salons privés (mais garde 'general')
-    Array.from(socket.rooms).forEach(r => { if(r !== socket.id && r !== 'general') socket.leave(r); });
-    
+  socket.on('join room', async (roomID) => {
+    Array.from(socket.rooms).forEach(r => { if (r !== socket.id && r !== 'general') socket.leave(r); });
     socket.join(roomID);
-    if (!chatHistory[roomID]) chatHistory[roomID] = []; // Crée l'historique si nouveau MP
-    socket.emit('chat history', { room: roomID, history: chatHistory[roomID] });
+    const history = await Message.find({ room: roomID }).sort({ timestamp: 1 }).limit(100);
+    socket.emit('chat history', { room: roomID, history });
   });
 
-  // 3. Recevoir et distribuer les messages
-  socket.on('chat message', (data) => {
-    const room = data.room; // 'general' ou ID du MP
-    const msg = {
-      author: currentUser,
-      avatar: usersDB[currentUser].avatar,
-      text: data.text,
-      time: new Date().toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })
-    };
-
-    if (!chatHistory[room]) chatHistory[room] = [];
-    chatHistory[room].push(msg);
-    if (chatHistory[room].length > 200) chatHistory[room].shift();
-
-    io.to(room).emit('chat message', { room: room, message: msg });
+  socket.on('chat message', async (data) => {
+    const user = await User.findById(currentUserId);
+    if (!user) return;
+    const msg = new Message({
+      room: data.room, authorId: currentUserId, authorName: user.displayName,
+      avatar: user.avatar, text: data.text, time: new Date().toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })
+    });
+    await msg.save();
+    io.to(data.room).emit('chat message', { room: data.room, message: msg });
+    if(data.room !== 'general') io.emit('notification', { room: data.room, fromId: currentUserId });
   });
 
-  // 4. Mise à jour du profil depuis les paramètres
-  socket.on('update profile', (data) => {
-    if(currentUser && usersDB[currentUser]) {
-      if (data.avatar !== undefined) usersDB[currentUser].avatar = data.avatar;
-      // On prévient les autres du changement pour rafraichir l'UI
-      io.emit('online users', Array.from(onlineUsers));
+  socket.on('update profile', async (newData, callback) => {
+    const user = await User.findById(currentUserId);
+    if (user) {
+      if (newData.displayName) user.displayName = newData.displayName;
+      if (newData.avatar) user.avatar = newData.avatar;
+      if (newData.password) user.password = await bcrypt.hash(newData.password, 10);
+      await user.save();
+      const onlineUsers = await User.find({ isOnline: true }, 'displayName avatar _id');
+      io.emit('online users', onlineUsers);
+      callback({ success: true, userData: { id: user._id, login: user.login, displayName: user.displayName, tag: user.tag, avatar: user.avatar } });
     }
   });
 
-  // 5. Déconnexion
-  socket.on('disconnect', () => {
-    if (currentUser) {
-      onlineUsers.delete(currentUser);
-      io.emit('online users', Array.from(onlineUsers));
+  // --- SIGNALISATION WEBRTC (APPELS VOCAUX) ---
+  socket.on('webrtc-offer', (data) => socket.to(data.room).emit('webrtc-offer', data));
+  socket.on('webrtc-answer', (data) => socket.to(data.room).emit('webrtc-answer', data));
+  socket.on('webrtc-ice-candidate', (data) => socket.to(data.room).emit('webrtc-ice-candidate', data));
+
+  socket.on('disconnect', async () => {
+    if (currentUserId) {
+      await User.findByIdAndUpdate(currentUserId, { isOnline: false });
+      const onlineUsers = await User.find({ isOnline: true }, 'displayName avatar _id');
+      io.emit('online users', onlineUsers);
     }
   });
 });
 
 const PORT = process.env.PORT || 3000;
-server.listen(PORT, () => {
-  console.log(`Le serveur tourne sur le port ${PORT}`);
-});
+server.listen(PORT, () => console.log(`Aurora Server Pro sur port ${PORT}`));
