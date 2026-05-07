@@ -7,15 +7,35 @@
         :root { --bg-tertiary: #1e1f22; --bg-secondary: #2b2d31; --bg-primary: #313338; --bg-message-hover: #2e3035; --bg-modifier-hover: #35373c; --text-normal: #dbdee1; --text-muted: #80848e; --brand-experiment: #5865F2; --green-success: #23a559; --yellow-idle: #f0b232; --red-danger: #da373c; --grey-offline: #80848e; --profile-card: #232428; }
         body { font-family: 'Segoe UI', Tahoma, sans-serif; margin: 0; padding: 0; display: flex; height: 100vh; background-color: var(--bg-primary); color: var(--text-normal); overflow: hidden; }
         
-        #login-screen { position: absolute; inset: 0; background-color: var(--bg-primary); display: flex; justify-content: center; align-items: center; z-index: 2000; }
-        .login-box { background-color: var(--bg-secondary); padding: 32px; border-radius: 8px; width: 400px; text-align: center; }
-        .login-box h2 { color: white; margin: 0 0 8px 0; }
-        .login-box input { width: 100%; padding: 10px; margin-bottom: 15px; border-radius: 4px; border: none; background-color: var(--bg-tertiary); color: white; outline: none; }
-        .login-box button { width: 100%; padding: 10px; background-color: var(--brand-experiment); color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; }
-        #login-error { color: var(--red-danger); font-size: 13px; margin-bottom: 10px; display: none; }
+        /* --- BACKGROUND ANIMÉ AURORA --- */
+        @keyframes auroraAnim {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        #login-screen { 
+            position: absolute; inset: 0; 
+            background: linear-gradient(-45deg, #1e1f22, #2b2d31, #5865F2, #23a559, #9b59b6);
+            background-size: 400% 400%;
+            animation: auroraAnim 12s ease infinite;
+            display: flex; justify-content: center; align-items: center; z-index: 2000; 
+        }
+        .login-box { 
+            background-color: rgba(43, 45, 49, 0.85); /* Transparent pour voir l'animation */
+            backdrop-filter: blur(10px); /* Effet verre dépoli pro */
+            padding: 32px; border-radius: 12px; width: 400px; text-align: center; 
+            box-shadow: 0 8px 24px rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1);
+        }
+        .login-box h2 { color: white; margin: 0 0 20px 0; font-size: 28px; }
+        .login-box input { width: 100%; box-sizing: border-box; padding: 12px; margin-bottom: 15px; border-radius: 6px; border: none; background-color: rgba(30, 31, 34, 0.8); color: white; outline: none; font-size: 14px;}
+        .login-box input:focus { outline: 2px solid var(--brand-experiment); }
+        .login-box button { width: 100%; padding: 12px; background-color: var(--brand-experiment); color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 16px; transition: 0.2s;}
+        .login-box button:hover { opacity: 0.9; transform: translateY(-1px); }
+        #login-error { color: #ff6b6b; font-size: 14px; margin-bottom: 15px; display: none; font-weight: bold; }
 
+        /* UI Principale */
         .servers { width: 72px; background-color: var(--bg-tertiary); display: flex; flex-direction: column; align-items: center; padding-top: 12px; gap: 8px; z-index: 10; }
-        .server-icon { width: 48px; height: 48px; background-color: var(--bg-primary); border-radius: 50%; display: flex; justify-content: center; align-items: center; cursor: pointer; color: white; font-weight: bold; }
+        .server-icon { width: 48px; height: 48px; background-color: var(--bg-primary); border-radius: 50%; display: flex; justify-content: center; align-items: center; cursor: pointer; color: white; font-weight: bold; transition: 0.2s;}
         .server-icon.active { border-radius: 16px; background-color: var(--brand-experiment); }
         .server-separator { width: 32px; height: 2px; background-color: var(--bg-modifier-hover); }
 
@@ -62,7 +82,7 @@
         
         #call-modal { position: absolute; top: 20px; right: 20px; background: var(--bg-secondary); padding: 15px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.5); z-index: 3000; display: none; border: 1px solid var(--brand-experiment); }
         
-        /* PARAMÈTRES (PRO) */
+        /* PARAMÈTRES */
         #settings-screen { position: absolute; inset: 0; background-color: var(--bg-primary); display: none; z-index: 1000; }
         .settings-sidebar { width: 30%; background-color: var(--bg-secondary); display: flex; justify-content: flex-end; padding-top: 60px; }
         .settings-nav { width: 220px; padding: 0 20px; }
@@ -84,7 +104,6 @@
         .settings-input { background-color: var(--bg-tertiary); border: none; color: white; padding: 8px; border-radius: 4px; outline: none; width: 200px;}
         .btn-secondary { background-color: #4e5058; color: white; border: none; padding: 6px 16px; border-radius: 4px; cursor: pointer; }
         
-        /* Options Switch & Sélecteurs */
         select, input[type="color"] { background-color: var(--bg-tertiary); border: none; color: white; padding: 8px; border-radius: 4px; outline: none; }
         .mic-bar { height: 10px; background-color: var(--bg-tertiary); border-radius: 5px; margin-top: 10px; overflow: hidden; width: 300px;}
         .mic-level { height: 100%; background-color: var(--green-success); width: 0%; transition: width 0.1s;}
@@ -93,11 +112,11 @@
 <body>
     <div id="login-screen">
         <div class="login-box">
-            <h2>Bienvenue sur Aurora</h2>
+            <h2>Aurora</h2>
             <div id="login-error"></div>
             <input type="text" id="login-username" placeholder="Identifiant" autocomplete="off" />
             <input type="password" id="login-password" placeholder="Mot de passe" autocomplete="off" />
-            <button id="login-btn">Se connecter / S'inscrire</button>
+            <button id="login-btn">Se connecter</button>
         </div>
     </div>
 
@@ -138,7 +157,6 @@
         <div class="input-area"><div class="input-wrapper"><form id="form" style="flex-grow:1;display:flex;"><input id="input" autocomplete="off" placeholder="Envoyer un message..." /></form></div></div>
     </div>
 
-    <!-- Modal Appel -->
     <div id="call-modal">
         <div style="color:white; font-weight:bold; margin-bottom:10px;">📞 Appel entrant...</div>
         <div style="display:flex; gap:10px;">
@@ -148,7 +166,7 @@
     </div>
     <audio id="remote-audio" autoplay></audio>
 
-    <!-- PARAMÈTRES (AVEC ONGLETS) -->
+    <!-- PARAMÈTRES -->
     <div id="settings-screen">
         <div class="settings-sidebar">
             <div class="settings-nav">
@@ -160,7 +178,6 @@
             </div>
         </div>
         
-        <!-- ONGLET COMPTE -->
         <div class="settings-content active" id="tab-compte">
             <div class="close-settings" onclick="closeSettings()">✕</div>
             <h2 style="color: white; margin-top:0;">Mon compte</h2>
@@ -201,7 +218,6 @@
             </div>
         </div>
 
-        <!-- ONGLET APPARENCE -->
         <div class="settings-content" id="tab-apparence">
             <div class="close-settings" onclick="closeSettings()">✕</div>
             <h2 style="color: white; margin-top:0;">Apparence</h2>
@@ -210,7 +226,6 @@
             <button class="btn-primary" style="margin-top:10px; display:block;" onclick="saveTheme()">Appliquer le thème</button>
         </div>
 
-        <!-- ONGLET VOIX -->
         <div class="settings-content" id="tab-voix">
             <div class="close-settings" onclick="closeSettings()">✕</div>
             <h2 style="color: white; margin-top:0;">Voix & Vidéo</h2>
@@ -219,7 +234,6 @@
             <div class="mic-bar"><div class="mic-level" id="mic-level"></div></div>
         </div>
 
-        <!-- ONGLET NOTIFICATIONS -->
         <div class="settings-content" id="tab-notifs">
             <div class="close-settings" onclick="closeSettings()">✕</div>
             <h2 style="color: white; margin-top:0;">Notifications</h2>
@@ -234,19 +248,20 @@
         </div>
     </div>
 
-    <script src="/socket.io/socket.io.js"></script>
+    <!-- CONNEXION AU SERVEUR RENDER ICI 👇 -->
+    <script src="https://aurora-chat-server.onrender.com/socket.io/socket.io.js"></script>
     <script>
-        var socket = io();
+        // ON DIT A L'APPLICATION DE SE CONNECTER A TON SERVEUR RENDER
+        var socket = io('https://aurora-chat-server.onrender.com');
+        
         var myUser = null;
         var currentRoom = 'general';
         var unreadCounts = {};
         
-        // Préférences locales
         var appPrefs = JSON.parse(localStorage.getItem('auroraPrefs')) || { sound: true, desktop: false };
         document.getElementById('toggle-sound').checked = appPrefs.sound;
         document.getElementById('toggle-desktop').checked = appPrefs.desktop;
 
-        // Son de notification (Bip Base64 léger)
         const notifSound = new Audio('data:audio/mp3;base64,//NExAAAAANIAAAAAExBTUUzLjEwMKqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq//NExAAAAANIAAAAAExBTUUzLjEwMKqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq');
 
         function stringToColor(str) { let h=0; for(let i=0;i<str.length;i++) h=str.charCodeAt(i)+((h<<5)-h); return `hsl(${h%360},70%,60%)`; }
@@ -259,10 +274,23 @@
         document.getElementById('login-btn').onclick = () => {
             const u = document.getElementById('login-username').value;
             const p = document.getElementById('login-password').value;
-            if(u&&p) socket.emit('login', {loginName:u, password:p}, res => {
-                if(res.success) { myUser=res.userData; document.getElementById('login-screen').style.display='none'; updateUI(); applyTheme(myUser.themeColor); }
-                else { document.getElementById('login-error').textContent=res.message; document.getElementById('login-error').style.display='block'; }
-            });
+            if(u&&p) {
+                // On affiche qu'on charge
+                document.getElementById('login-btn').textContent = "Connexion...";
+                
+                socket.emit('login', {loginName:u, password:p}, res => {
+                    if(res.success) { 
+                        myUser=res.userData; 
+                        document.getElementById('login-screen').style.display='none'; 
+                        updateUI(); 
+                        applyTheme(myUser.themeColor); 
+                    } else { 
+                        document.getElementById('login-error').textContent=res.message; 
+                        document.getElementById('login-error').style.display='block'; 
+                        document.getElementById('login-btn').textContent = "Se connecter";
+                    }
+                });
+            }
         };
 
         // UI & Amis
@@ -297,11 +325,9 @@
 
         socket.on('notification', data => {
             if(data.room !== currentRoom && data.room.includes(myUser.id)) {
-                // Si on n'est pas "Ne pas déranger"
                 if(myUser.status !== 'dnd') {
                     unreadCounts[data.room] = (unreadCounts[data.room]||0)+1;
                     if(document.getElementById(`badge-${data.room}`)) { document.getElementById(`badge-${data.room}`).textContent=unreadCounts[data.room]; document.getElementById(`badge-${data.room}`).style.display='block'; }
-                    
                     if(appPrefs.sound) notifSound.play().catch(()=>{});
                     if(appPrefs.desktop && document.hidden) new Notification(`Nouveau message de ${data.authorName}`, { body: data.text });
                 }
@@ -315,7 +341,7 @@
             document.getElementById('messages').appendChild(div); document.getElementById('messages').scrollTop=document.getElementById('messages').scrollHeight;
         }
 
-        // --- PARAMÈTRES / ONGLETS ---
+        // PARAMÈTRES
         function openSettings(tab) {
             document.getElementById('settings-screen').style.display='block';
             document.querySelectorAll('.settings-content').forEach(e=>e.classList.remove('active'));
@@ -353,15 +379,17 @@
             socket.emit('update profile', obj, res => { if(res.success){ myUser=res.userData; updateUI(); alert("Sauvegardé !"); document.getElementById('input-password').value=''; } });
         }
 
+        // Upload Avatar vers le serveur Render
         document.getElementById('avatar-upload').onchange = async (e) => {
             const f=e.target.files[0]; if(!f) return;
             const fd = new FormData(); fd.append('avatar', f);
-            try { const res = await fetch('/upload-avatar', {method:'POST',body:fd}); const data = await res.json();
+            try { 
+                const res = await fetch('https://aurora-chat-server.onrender.com/upload-avatar', {method:'POST',body:fd}); 
+                const data = await res.json();
                 if(data.success) socket.emit('update profile', {avatar:data.url}, r => { if(r.success) { myUser=r.userData; updateUI(); } });
             } catch(e){ alert("Erreur upload"); }
         };
 
-        // Thème
         function applyTheme(color) { document.documentElement.style.setProperty('--brand-experiment', color); }
         function saveTheme() {
             const col = document.getElementById('theme-color-picker').value;
@@ -369,7 +397,6 @@
             socket.emit('update profile', { themeColor: col }, res => { if(res.success) myUser=res.userData; });
         }
 
-        // Préférences Notifs
         function saveAppPrefs() {
             appPrefs.sound = document.getElementById('toggle-sound').checked;
             appPrefs.desktop = document.getElementById('toggle-desktop').checked;
@@ -378,13 +405,12 @@
         function enableDesktopNotifs() {
             if(document.getElementById('toggle-desktop').checked) {
                 Notification.requestPermission().then(p => {
-                    if(p !== 'granted') { alert("Vous devez autoriser les notifications dans Windows/Navigateur !"); document.getElementById('toggle-desktop').checked=false; }
+                    if(p !== 'granted') { alert("Vous devez autoriser les notifications dans Windows !"); document.getElementById('toggle-desktop').checked=false; }
                     saveAppPrefs();
                 });
             } else saveAppPrefs();
         }
 
-        // Test Micro
         let audioCtx, analyser, dataArray, micTesting=false, animId;
         async function toggleMicTest() {
             const btn = document.getElementById('btn-test-mic');
@@ -407,7 +433,6 @@
             } catch(e) { alert("Micro introuvable !"); }
         }
 
-        // WEBRTC Appels (Code raccourci)
         let pc, ls, isCall=false; const cfg={iceServers:[{urls:'stun:stun.l.google.com:19302'}]}; let pOff=null;
         async function toggleCall() {
             const b = document.getElementById('start-call-btn');
