@@ -10,7 +10,17 @@ const multer = require('multer');
 
 const app = express();
 const server = http.createServer(app);
-const io = new Server(server);
+
+// 🔓 AUTORISER L'APPLICATION PC A SE CONNECTER
+app.use((req, res, next) => {
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+  next();
+});
+
+const io = new Server(server, {
+  cors: { origin: "*", methods: ["GET", "POST"] } // Débloque Socket.io
+});
 
 app.use(express.static('public'));
 
@@ -36,7 +46,7 @@ const UserSchema = new mongoose.Schema({
   displayName: { type: String },
   avatar: { type: String, default: '' },
   bio: { type: String, default: "Salut ! J'utilise Aurora Chat." },
-  status: { type: String, default: 'online' }, // online, idle, dnd, invisible
+  status: { type: String, default: 'online' },
   themeColor: { type: String, default: '#5865F2' },
   isOnline: { type: Boolean, default: false }
 });
@@ -58,27 +68,31 @@ io.on('connection', (socket) => {
   let currentUserId = null;
 
   socket.on('login', async ({ loginName, password }, callback) => {
-    loginName = loginName.toLowerCase().trim();
-    let user = await User.findOne({ login: loginName });
+    try {
+      loginName = loginName.toLowerCase().trim();
+      let user = await User.findOne({ login: loginName });
 
-    if (!user) {
-      const hashedPassword = await bcrypt.hash(password, 10);
-      user = new User({ login: loginName, password: hashedPassword, displayName: loginName, isOnline: true });
-      await user.save();
-    } else {
-      const isMatch = await bcrypt.compare(password, user.password);
-      if (!isMatch) return callback({ success: false, message: 'Mot de passe incorrect !' });
-      user.isOnline = true;
-      await user.save();
+      if (!user) {
+        const hashedPassword = await bcrypt.hash(password, 10);
+        user = new User({ login: loginName, password: hashedPassword, displayName: loginName, isOnline: true });
+        await user.save();
+      } else {
+        const isMatch = await bcrypt.compare(password, user.password);
+        if (!isMatch) return callback({ success: false, message: 'Mot de passe incorrect !' });
+        user.isOnline = true;
+        await user.save();
+      }
+
+      currentUserId = user._id.toString();
+      socket.join('general');
+      
+      callback({ success: true, userData: { id: user._id, login: user.login, displayName: user.displayName, avatar: user.avatar, bio: user.bio, status: user.status, themeColor: user.themeColor } });
+
+      const onlineUsers = await User.find({ isOnline: true, status: { $ne: 'invisible' } }, 'displayName avatar _id status');
+      io.emit('online users', onlineUsers);
+    } catch(err) {
+      callback({ success: false, message: 'Erreur serveur.' });
     }
-
-    currentUserId = user._id.toString();
-    socket.join('general');
-    
-    callback({ success: true, userData: { id: user._id, login: user.login, displayName: user.displayName, avatar: user.avatar, bio: user.bio, status: user.status, themeColor: user.themeColor } });
-
-    const onlineUsers = await User.find({ isOnline: true, status: { $ne: 'invisible' } }, 'displayName avatar _id status');
-    io.emit('online users', onlineUsers);
   });
 
   socket.on('join room', async (roomID) => {
