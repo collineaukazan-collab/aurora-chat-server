@@ -7,6 +7,7 @@ const bcrypt = require('bcryptjs');
 const cloudinary = require('cloudinary').v2;
 const { CloudinaryStorage } = require('multer-storage-cloudinary');
 const multer = require('multer');
+const fs = require('fs');
 
 const app = express();
 const server = http.createServer(app);
@@ -29,6 +30,16 @@ app.get('/ping', (req, res) => {
   res.status(200).send('Serveur réveillé !');
 });
 
+// 🏷️ ROUTE DE LECTURE AUTOMATIQUE DE LA VERSION
+app.get('/version', (req, res) => {
+  try {
+    const packageJson = require('./package.json');
+    res.json({ version: packageJson.version });
+  } catch (err) {
+    res.json({ version: 'Inconnue' });
+  }
+});
+
 // ☁️ Configuration Cloudinary
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
@@ -36,14 +47,12 @@ cloudinary.config({
   api_secret: process.env.CLOUDINARY_API_SECRET
 });
 
-// Stockage pour les Avatars
 const avatarStorage = new CloudinaryStorage({
   cloudinary: cloudinary,
   params: { folder: 'aurora_avatars', allowed_formats: ['jpg', 'png', 'jpeg', 'gif'] },
 });
 const uploadAvatar = multer({ storage: avatarStorage });
 
-// 🖼️ NOUVEAU : Stockage pour les Images du Chat
 const chatStorage = new CloudinaryStorage({
   cloudinary: cloudinary,
   params: { folder: 'aurora_chat', allowed_formats: ['jpg', 'png', 'jpeg', 'gif', 'webp'] },
@@ -55,7 +64,6 @@ mongoose.connect(process.env.MONGO_URI)
   .then(() => console.log('✅ Connecté à MongoDB Atlas !'))
   .catch(err => console.log('❌ Erreur MongoDB:', err));
 
-// 📝 Modèles de données
 const UserSchema = new mongoose.Schema({
   login: { type: String, unique: true },
   password: { type: String },
@@ -81,20 +89,17 @@ app.post('/upload-avatar', uploadAvatar.single('avatar'), (req, res) => {
   else res.status(500).json({ success: false });
 });
 
-// 🖼️ NOUVELLE ROUTE : Recevoir les images du chat
 app.post('/upload-image', uploadChat.single('image'), (req, res) => {
   if (req.file && req.file.path) res.json({ success: true, url: req.file.path });
   else res.status(500).json({ success: false });
 });
 
-// 🛡️ FONCTION ANTI-HACK
 function escapeHTML(str) {
   return str.replace(/[&<>'"]/g, tag => ({
     '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;'
   }[tag] || tag));
 }
 
-// 🔌 Logique Temps Réel
 io.on('connection', (socket) => {
   let currentUserId = null;
   let currentUserDisplayName = null;
@@ -139,8 +144,7 @@ io.on('connection', (socket) => {
     const user = await User.findById(currentUserId);
     if (!user) return;
     
-    const safeText = escapeHTML(data.text); // Sécurité
-    
+    const safeText = escapeHTML(data.text);
     const msg = new Message({ room: data.room, authorId: currentUserId, authorName: user.displayName, avatar: user.avatar, text: safeText, time: new Date().toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' }) });
     await msg.save();
     io.to(data.room).emit('chat message', { room: data.room, message: msg });

@@ -21,6 +21,8 @@
         .login-box button { width: 100%; padding: 15px; background-color: var(--brand-experiment); color: white; border: none; border-radius: 10px; cursor: pointer; font-weight: 700; font-size: 16px; transition: 0.2s; font-family: 'Inter', sans-serif;}
         .login-box button:hover { opacity: 0.9; transform: translateY(-2px); box-shadow: 0 8px 20px rgba(88, 101, 242, 0.4); }
         #login-error { color: #ff6b6b; font-size: 14px; margin-bottom: 20px; display: none; font-weight: 600; background: rgba(255, 107, 107, 0.1); padding: 12px; border-radius: 8px;}
+        
+        /* 🏷️ BADGE VERSION */
         #app-version { position: absolute; bottom: 20px; right: 25px; color: rgba(255,255,255,0.5); font-size: 13px; font-weight: 600; background: rgba(0,0,0,0.4); padding: 6px 12px; border-radius: 20px; backdrop-filter: blur(5px); pointer-events: none;}
 
         .servers { width: 72px; background-color: var(--bg-tertiary); display: flex; flex-direction: column; align-items: center; padding-top: 16px; gap: 10px; z-index: 10; }
@@ -64,14 +66,12 @@
         .msg-time { color: var(--text-muted); font-size: 12px; font-weight: 500;}
         .msg-text { color: var(--text-normal); font-size: 15px; line-height: 1.5;}
         
-        /* 🖼️ CSS POUR LES IMAGES ET LE MARKDOWN */
         .chat-image { max-width: 350px; max-height: 350px; border-radius: 8px; margin-top: 8px; cursor: pointer; border: 1px solid rgba(255,255,255,0.1); transition: 0.2s;}
         .chat-image:hover { opacity: 0.9; box-shadow: 0 4px 12px rgba(0,0,0,0.5);}
         .msg-text strong { color: white; font-weight: 700; }
         .msg-text em { font-style: italic; }
         .msg-text code { background-color: #1e1f22; padding: 2px 6px; border-radius: 4px; font-family: Consolas, monospace; font-size: 13px; border: 1px solid rgba(255,255,255,0.05); color: #e5e5e5;}
         
-        /* BOUTON ATTACHE (TROMBONE) */
         .attach-btn { background: transparent; border: none; color: var(--text-muted); font-size: 20px; cursor: pointer; padding: 10px; border-radius: 50%; transition: 0.2s; display: flex; align-items: center; justify-content: center;}
         .attach-btn:hover { color: white; background: var(--bg-modifier-hover);}
 
@@ -124,7 +124,9 @@
 </head>
 <body>
     <div id="login-screen">
-        <div id="app-version">Version 2.1.0 (Pro)</div>
+        <!-- 🏷️ LA VERSION S'AFFICHERA ICI AUTOMATIQUEMENT -->
+        <div id="app-version">Chargement...</div>
+        
         <div class="login-box">
             <h2>Aurora</h2>
             <div id="login-error"></div>
@@ -167,7 +169,6 @@
         
         <div class="input-area">
             <div class="input-wrapper">
-                <!-- 📎 NOUVEAU : BOUTON ENVOI IMAGE -->
                 <label for="chat-image-upload" class="attach-btn" title="Envoyer une image">➕</label>
                 <input type="file" id="chat-image-upload" accept="image/*" style="display:none;">
                 
@@ -266,19 +267,20 @@
         document.getElementById('toggle-sound').checked = appPrefs.sound; document.getElementById('toggle-desktop').checked = appPrefs.desktop;
         const notifSound = new Audio('data:audio/mp3;base64,//NExAAAAANIAAAAAExBTUUzLjEwMKqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq//NExAAAAANIAAAAAExBTUUzLjEwMKqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq');
 
+        // 🏷️ RECUPERATION AUTOMATIQUE DE LA VERSION DEPUIS LE SERVEUR
+        fetch('https://aurora-chat-server.onrender.com/version')
+            .then(res => res.json())
+            .then(data => { document.getElementById('app-version').textContent = `Version ${data.version} (Pro)`; })
+            .catch(() => { document.getElementById('app-version').textContent = `Version (Pro)`; });
+
         function stringToColor(str) { let h=0; for(let i=0;i<str.length;i++) h=str.charCodeAt(i)+((h<<5)-h); return `hsl(${h%360},70%,60%)`; }
         function setAvatar(el, name, url) { if(url) { el.style.backgroundImage=`url('${url}')`; el.style.backgroundColor='transparent'; el.textContent=''; } else { el.style.backgroundImage='none'; el.style.backgroundColor=stringToColor(name||'?'); el.textContent=name?name.charAt(0).toUpperCase():'?'; } }
 
-        // 📝 PARSEUR MARKDOWN (Gras, Italique, Code, Images)
         function parseMarkdown(text) {
             let html = text;
-            // Parse Images: ![alt](url) -> se transforme en vraie balise <img>
             html = html.replace(/!\[.*?\]\((.+?)\)/g, '<img src="$1" class="chat-image" onclick="window.open(\'$1\', \'_blank\')" />');
-            // Gras: **texte**
             html = html.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
-            // Italique: *texte*
             html = html.replace(/\*(.*?)\*/g, '<em>$1</em>');
-            // Code: `code`
             html = html.replace(/`(.*?)`/g, '<code>$1</code>');
             return html;
         }
@@ -365,7 +367,6 @@
             else { typingEl.textContent = `Plusieurs personnes écrivent...`; typingEl.classList.add('visible'); }
         }
 
-        // ENVOI D'UN MESSAGE TEXTE
         document.getElementById('form').onsubmit = (e) => { 
             e.preventDefault(); 
             const input=document.getElementById('input'); 
@@ -376,7 +377,6 @@
             } 
         };
 
-        // 🖼️ ENVOI D'UNE IMAGE DANS LE CHAT
         document.getElementById('chat-image-upload').onchange = async (e) => {
             const f = e.target.files[0]; if(!f) return;
             const fd = new FormData(); fd.append('image', f);
@@ -387,7 +387,6 @@
                 const res = await fetch('https://aurora-chat-server.onrender.com/upload-image', { method: 'POST', body: fd });
                 const data = await res.json();
                 if(data.success) {
-                    // On envoie le lien sous forme de Markdown !
                     socket.emit('chat message', { room: currentRoom, text: `![image](${data.url})` });
                 } else {
                     alert("❌ L'image est trop grosse ou Cloudinary a bloqué l'envoi.");
@@ -397,7 +396,7 @@
             }
             
             input.placeholder = "Envoyer un message...";
-            e.target.value = ''; // Réinitialise l'input
+            e.target.value = '';
         };
 
         socket.on('chat history', data => { if(data.room===currentRoom) { document.getElementById('messages').innerHTML=''; data.history.forEach(displayMessage); }});
@@ -416,10 +415,7 @@
 
         function displayMessage(msg) {
             let div = document.createElement('div'); div.className='message';
-            
-            // 📝 ON APPLIQUE LE MARKDOWN ICI !
             const formattedText = parseMarkdown(msg.text);
-
             div.innerHTML = `<div class="msg-avatar"></div><div class="msg-content"><div class="msg-header"><span class="msg-author">${msg.authorName}</span><span class="msg-time">${msg.time}</span></div><span class="msg-text">${formattedText}</span></div>`;
             setAvatar(div.querySelector('.msg-avatar'), msg.authorName, msg.avatar);
             document.getElementById('messages').appendChild(div); document.getElementById('messages').scrollTop=document.getElementById('messages').scrollHeight;
