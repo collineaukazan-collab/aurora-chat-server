@@ -3,93 +3,125 @@
 <head>
     <meta charset="UTF-8">
     <title>Aurora Chat</title>
+    <!-- 🌟 IMPORTATION DE LA POLICE PRO 'INTER' -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
     <style>
-        :root { --bg-tertiary: #1e1f22; --bg-secondary: #2b2d31; --bg-primary: #313338; --bg-message-hover: #2e3035; --bg-modifier-hover: #35373c; --text-normal: #dbdee1; --text-muted: #80848e; --brand-experiment: #5865F2; --green-success: #23a559; --yellow-idle: #f0b232; --red-danger: #da373c; --grey-offline: #80848e; --profile-card: #232428; }
-        body { font-family: 'Segoe UI', Tahoma, sans-serif; margin: 0; padding: 0; display: flex; height: 100vh; background-color: var(--bg-primary); color: var(--text-normal); overflow: hidden; }
+        :root { --bg-tertiary: #1e1f22; --bg-secondary: #2b2d31; --bg-primary: #313338; --bg-message-hover: #2e3035; --bg-modifier-hover: rgba(255,255,255,0.06); --text-normal: #dbdee1; --text-muted: #949ba4; --brand-experiment: #5865F2; --green-success: #23a559; --yellow-idle: #f0b232; --red-danger: #da373c; --grey-offline: #80848e; --profile-card: #111214; }
         
-        /* 🌌 BACKGROUND ANIMÉ AURORA 🌌 */
-        @keyframes auroraAnim { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
-        #login-screen { position: absolute; inset: 0; background: linear-gradient(-45deg, #1e1f22, #2b2d31, #5865F2, #23a559, #9b59b6); background-size: 400% 400%; animation: auroraAnim 12s ease infinite; display: flex; justify-content: center; align-items: center; z-index: 2000; }
+        /* Police globale et fond */
+        body { font-family: 'Inter', sans-serif; margin: 0; padding: 0; display: flex; height: 100vh; background-color: var(--bg-primary); color: var(--text-normal); overflow: hidden; -webkit-font-smoothing: antialiased; }
         
-        /* BOÎTE DE CONNEXION PROPRE */
-        .login-box { background-color: rgba(43, 45, 49, 0.85); backdrop-filter: blur(12px); padding: 40px; border-radius: 16px; width: 380px; text-align: center; box-shadow: 0 15px 35px rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.08); }
-        .login-box h2 { color: white; margin: 0 0 25px 0; font-size: 32px; font-weight: 800; letter-spacing: 1px;}
-        .login-box input { width: 100%; box-sizing: border-box; padding: 14px; margin-bottom: 16px; border-radius: 8px; border: 1px solid transparent; background-color: rgba(30, 31, 34, 0.9); color: white; outline: none; font-size: 15px; transition: 0.3s;}
-        .login-box input:focus { border: 1px solid var(--brand-experiment); background-color: #1e1f22;}
-        .login-box button { width: 100%; padding: 14px; background-color: var(--brand-experiment); color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 16px; transition: 0.2s; margin-top: 10px;}
-        .login-box button:hover { opacity: 0.9; transform: translateY(-2px); box-shadow: 0 5px 15px rgba(88, 101, 242, 0.3); }
-        #login-error { color: #ff6b6b; font-size: 14px; margin-bottom: 15px; display: none; font-weight: 600; background: rgba(255, 107, 107, 0.1); padding: 10px; border-radius: 6px;}
-        
-        /* 🏷️ BADGE DE VERSION 🏷️ */
-        #app-version { position: absolute; bottom: 20px; right: 25px; color: rgba(255,255,255,0.6); font-size: 13px; font-weight: bold; background: rgba(0,0,0,0.4); padding: 6px 12px; border-radius: 20px; backdrop-filter: blur(5px); pointer-events: none; border: 1px solid rgba(255,255,255,0.1);}
+        /* 🌟 SCROLLBARS INVISIBLES ET PROPRES */
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #1a1b1e; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #202225; }
 
-        /* UI Principale (Identique, propre et rangée) */
-        .servers { width: 72px; background-color: var(--bg-tertiary); display: flex; flex-direction: column; align-items: center; padding-top: 12px; gap: 8px; z-index: 10; }
-        .server-icon { width: 48px; height: 48px; background-color: var(--bg-primary); border-radius: 50%; display: flex; justify-content: center; align-items: center; cursor: pointer; color: white; font-weight: bold; transition: 0.3s;}
+        /* BACKGROUND ANIMÉ */
+        @keyframes auroraAnim { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
+        #login-screen { position: absolute; inset: 0; background: linear-gradient(-45deg, #0f1013, #1e1f22, #5865F2, #23a559, #9b59b6); background-size: 400% 400%; animation: auroraAnim 15s ease infinite; display: flex; justify-content: center; align-items: center; z-index: 2000; }
+        
+        /* BOÎTE DE CONNEXION */
+        .login-box { background-color: rgba(43, 45, 49, 0.7); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); padding: 48px; border-radius: 20px; width: 420px; text-align: center; box-shadow: 0 20px 40px rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.05); }
+        .login-box h2 { color: white; margin: 0 0 30px 0; font-size: 32px; font-weight: 800; letter-spacing: -0.5px;}
+        .login-box input { width: 100%; box-sizing: border-box; padding: 15px; margin-bottom: 20px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.05); background-color: rgba(30, 31, 34, 0.8); color: white; outline: none; font-size: 15px; transition: 0.2s; font-family: 'Inter', sans-serif;}
+        .login-box input:focus { border-color: var(--brand-experiment); background-color: #1e1f22; box-shadow: 0 0 0 3px rgba(88, 101, 242, 0.2);}
+        .login-box button { width: 100%; padding: 15px; background-color: var(--brand-experiment); color: white; border: none; border-radius: 10px; cursor: pointer; font-weight: 700; font-size: 16px; transition: 0.2s; font-family: 'Inter', sans-serif;}
+        .login-box button:hover { opacity: 0.9; transform: translateY(-2px); box-shadow: 0 8px 20px rgba(88, 101, 242, 0.4); }
+        #login-error { color: #ff6b6b; font-size: 14px; margin-bottom: 20px; display: none; font-weight: 600; background: rgba(255, 107, 107, 0.1); padding: 12px; border-radius: 8px;}
+        #app-version { position: absolute; bottom: 20px; right: 25px; color: rgba(255,255,255,0.5); font-size: 13px; font-weight: 600; background: rgba(0,0,0,0.4); padding: 6px 12px; border-radius: 20px; backdrop-filter: blur(5px); pointer-events: none;}
+
+        /* UI PRINCIPALE */
+        .servers { width: 72px; background-color: var(--bg-tertiary); display: flex; flex-direction: column; align-items: center; padding-top: 16px; gap: 10px; z-index: 10; }
+        .server-icon { width: 48px; height: 48px; background-color: var(--bg-primary); border-radius: 50%; display: flex; justify-content: center; align-items: center; cursor: pointer; color: white; font-weight: 700; font-size: 18px; transition: 0.2s ease-out;}
         .server-icon:hover { border-radius: 16px; background-color: var(--brand-experiment); }
-        .server-icon.active { border-radius: 16px; background-color: var(--brand-experiment); }
-        .server-separator { width: 32px; height: 2px; background-color: var(--bg-modifier-hover); margin: 4px 0;}
-        .sidebar { width: 240px; background-color: var(--bg-secondary); display: flex; flex-direction: column; }
-        .channel-list { padding: 10px; flex-grow: 1; overflow-y: auto; }
-        .channel-category { color: var(--text-muted); font-size: 12px; font-weight: 800; text-transform: uppercase; margin: 15px 0 5px 5px; }
-        .channel-item { padding: 8px 10px; border-radius: 6px; cursor: pointer; color: var(--text-muted); display: flex; align-items: center; gap: 10px; margin-bottom: 2px; font-weight: 500;}
+        .server-icon.active { border-radius: 16px; background-color: var(--brand-experiment); box-shadow: 0 4px 15px rgba(88, 101, 242, 0.4);}
+        .server-separator { width: 32px; height: 2px; background-color: rgba(255,255,255,0.06); margin: 4px 0;}
+        
+        .sidebar { width: 250px; background-color: var(--bg-secondary); display: flex; flex-direction: column; border-top-left-radius: 12px;}
+        .channel-list { padding: 16px 10px; flex-grow: 1; overflow-y: auto; }
+        .channel-category { color: var(--text-muted); font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; margin: 15px 0 8px 8px; }
+        .channel-item { padding: 10px; border-radius: 8px; cursor: pointer; color: var(--text-muted); display: flex; align-items: center; gap: 12px; margin-bottom: 4px; font-weight: 500; transition: 0.1s;}
         .channel-item:hover, .channel-item.active { background-color: var(--bg-modifier-hover); color: white; }
-        .channel-avatar { width: 32px; height: 32px; border-radius: 50%; background-size: cover; background-position: center; display: flex; justify-content: center; align-items: center; color: white; font-weight: bold; position: relative;}
+        
+        .channel-avatar { width: 36px; height: 36px; border-radius: 50%; background-size: cover; background-position: center; display: flex; justify-content: center; align-items: center; color: white; font-weight: bold; position: relative;}
         .status-dot { position: absolute; bottom: -2px; right: -2px; width: 12px; height: 12px; border-radius: 50%; border: 3px solid var(--bg-secondary); }
-        .status-online { background-color: var(--green-success); }
-        .status-idle { background-color: var(--yellow-idle); }
-        .status-dnd { background-color: var(--red-danger); }
-        .status-invisible { background-color: var(--grey-offline); }
+        .status-online { background-color: var(--green-success); } .status-idle { background-color: var(--yellow-idle); } .status-dnd { background-color: var(--red-danger); } .status-invisible { background-color: var(--grey-offline); }
         .notification-badge { background-color: var(--red-danger); color: white; font-size: 11px; font-weight: bold; padding: 2px 6px; border-radius: 12px; position: absolute; right: 10px; display: none; }
-        .user-panel { background-color: #232428; padding: 0 10px; height: 52px; display: flex; align-items: center; gap: 10px; }
-        .user-panel-avatar { width: 32px; height: 32px; border-radius: 50%; background-size: cover; background-position: center; position: relative; cursor: pointer;}
-        .user-info { flex-grow: 1; overflow: hidden; }
-        .user-info .username { color: white; font-weight: 700; font-size: 14px; white-space: nowrap; text-overflow: ellipsis; overflow: hidden;}
-        .btn-icon { background: transparent; border: none; color: var(--text-muted); cursor: pointer; font-size: 18px; padding: 6px; border-radius: 4px; transition: 0.2s;}
-        .btn-icon:hover { color: white; background: rgba(255,255,255,0.1);}
+        
+        .user-panel { background-color: #232428; padding: 0 12px; height: 56px; display: flex; align-items: center; gap: 12px; }
+        .user-panel-avatar { width: 36px; height: 36px; border-radius: 50%; background-size: cover; background-position: center; position: relative; cursor: pointer;}
+        .user-info { flex-grow: 1; overflow: hidden; display: flex; flex-direction: column; justify-content: center;}
+        .user-info .username { color: white; font-weight: 700; font-size: 14px; white-space: nowrap; text-overflow: ellipsis; overflow: hidden; margin-bottom: 2px;}
+        #status-select { background: transparent; padding: 0; font-size: 12px; color: var(--text-muted); border: none; outline: none; cursor: pointer; font-family: 'Inter', sans-serif; font-weight: 500; appearance: none; -webkit-appearance: none;}
+        #status-select option { background: var(--bg-secondary); color: white; }
+        .btn-icon { background: transparent; border: none; color: var(--text-muted); cursor: pointer; font-size: 18px; padding: 8px; border-radius: 6px; transition: 0.2s;}
+        .btn-icon:hover { color: white; background: var(--bg-modifier-hover);}
+        
         .chat { flex-grow: 1; display: flex; flex-direction: column; background-color: var(--bg-primary); }
-        .chat-header { height: 48px; padding: 0 16px; border-bottom: 1px solid #1f2023; display: flex; align-items: center; justify-content: space-between; font-weight: bold; color: white; box-shadow: 0 1px 2px rgba(0,0,0,0.2); z-index: 5;}
-        .call-btn { background-color: var(--green-success); color: white; border: none; padding: 6px 14px; border-radius: 4px; cursor: pointer; font-weight: bold; display: none; gap: 6px; align-items: center; transition: 0.2s;}
-        .call-btn:hover { opacity: 0.9; }
-        .call-btn.active { background-color: var(--red-danger); }
-        #messages { flex-grow: 1; overflow-y: auto; padding: 16px 0; }
-        .message { display: flex; gap: 16px; padding: 4px 16px 4px 72px; position: relative; margin-top: 17px; }
+        .chat-header { height: 56px; padding: 0 20px; border-bottom: 1px solid #25262a; display: flex; align-items: center; justify-content: space-between; font-weight: 600; color: white; font-size: 16px;}
+        .call-btn { background-color: var(--green-success); color: white; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-weight: 600; display: none; gap: 8px; align-items: center; transition: 0.2s; font-family: 'Inter', sans-serif;}
+        .call-btn:hover { background-color: #1f9450; } .call-btn.active { background-color: var(--red-danger); } .call-btn.active:hover { background-color: #c02d32; }
+        
+        #messages { flex-grow: 1; overflow-y: auto; padding: 20px 0; }
+        .message { display: flex; gap: 16px; padding: 6px 20px 6px 80px; position: relative; margin-top: 17px; }
         .message:hover { background-color: var(--bg-message-hover); }
-        .msg-avatar { position: absolute; left: 16px; width: 40px; height: 40px; border-radius: 50%; background-size: cover; background-position: center; cursor: pointer;}
+        .msg-avatar { position: absolute; left: 20px; width: 44px; height: 44px; border-radius: 50%; background-size: cover; background-position: center; cursor: pointer;}
         .msg-content { display: flex; flex-direction: column; }
         .msg-header { display: flex; gap: 10px; margin-bottom: 4px; align-items: baseline;}
         .msg-author { font-weight: 600; color: white; font-size: 16px; cursor: pointer;}
         .msg-author:hover { text-decoration: underline; }
-        .msg-time { color: var(--text-muted); font-size: 12px; }
-        .msg-text { color: var(--text-normal); font-size: 15px; line-height: 1.4;}
-        .input-area { padding: 0 16px 24px 16px; }
-        .input-wrapper { display: flex; align-items: center; background-color: #383a40; border-radius: 8px; padding: 0 16px; min-height: 48px; }
-        #input { flex-grow: 1; background: transparent; border: none; color: white; outline: none; font-size: 16px; padding: 14px 0; }
-        #call-modal { position: absolute; top: 20px; right: 20px; background: var(--bg-secondary); padding: 20px; border-radius: 8px; box-shadow: 0 8px 24px rgba(0,0,0,0.6); z-index: 3000; display: none; border: 1px solid var(--brand-experiment); }
+        .msg-time { color: var(--text-muted); font-size: 12px; font-weight: 500;}
+        .msg-text { color: var(--text-normal); font-size: 15px; line-height: 1.5;}
         
-        /* PARAMÈTRES (Épurés) */
+        .input-area { padding: 0 20px 24px 20px; }
+        .input-wrapper { display: flex; align-items: center; background-color: #383a40; border-radius: 12px; padding: 0 16px; min-height: 50px; }
+        #input { flex-grow: 1; background: transparent; border: none; color: white; outline: none; font-size: 15px; padding: 15px 0; font-family: 'Inter', sans-serif;}
+        #input::placeholder { color: #80848e; }
+        
+        /* MODAL APPEL */
+        #call-modal { position: absolute; top: 20px; right: 20px; background: var(--profile-card); padding: 20px; border-radius: 12px; box-shadow: 0 8px 30px rgba(0,0,0,0.6); z-index: 3000; display: none; border: 1px solid rgba(255,255,255,0.05); }
+        
+        /* ⚙️ PARAMÈTRES (LE GLOW-UP) ⚙️ */
         #settings-screen { position: absolute; inset: 0; background-color: var(--bg-primary); display: none; z-index: 1000; }
-        .settings-sidebar { width: 30%; background-color: var(--bg-secondary); display: flex; justify-content: flex-end; padding-top: 60px; }
-        .settings-nav { width: 220px; padding: 0 20px; }
-        .settings-item { padding: 10px 12px; color: #b5bac1; border-radius: 6px; cursor: pointer; margin-bottom: 4px; font-weight: 600;}
-        .settings-item.active { background-color: var(--bg-modifier-hover); color: white; }
-        .settings-content { width: 70%; padding: 60px 40px; overflow-y: auto; position: relative; display: none;}
+        .settings-sidebar { width: 35%; background-color: var(--bg-secondary); display: flex; justify-content: flex-end; padding-top: 80px; }
+        .settings-nav { width: 240px; padding: 0 20px; }
+        .settings-item { padding: 12px 14px; color: #b5bac1; border-radius: 8px; cursor: pointer; margin-bottom: 6px; font-weight: 600; transition: 0.2s;}
+        .settings-item:hover { background-color: var(--bg-modifier-hover); color: white; }
+        .settings-item.active { background-color: rgba(255,255,255,0.08); color: white; }
+        .settings-content { width: 65%; padding: 80px 50px; overflow-y: auto; position: relative; display: none;}
         .settings-content.active { display: block; }
-        .close-settings { position: absolute; top: 40px; right: 40px; width: 36px; height: 36px; border: 2px solid var(--text-muted); border-radius: 50%; display: flex; justify-content: center; align-items: center; color: var(--text-muted); cursor: pointer; transition: 0.2s;}
-        .close-settings:hover { border-color: white; color: white; transform: rotate(90deg);}
-        .profile-card { background-color: var(--profile-card); border-radius: 12px; margin-bottom: 40px; overflow: hidden;}
+        .close-settings { position: absolute; top: 40px; right: 60px; width: 40px; height: 40px; border: 2px solid var(--text-muted); border-radius: 50%; display: flex; justify-content: center; align-items: center; color: var(--text-muted); cursor: pointer; transition: 0.2s; font-weight: bold;}
+        .close-settings:hover { border-color: white; color: white; transform: rotate(90deg); background: rgba(255,255,255,0.1);}
+        
+        /* 🪪 CARTE DE PROFIL PRO */
+        .profile-card { background-color: var(--profile-card); border-radius: 16px; margin-bottom: 40px; overflow: hidden; box-shadow: 0 8px 24px rgba(0,0,0,0.2);}
         .profile-banner { height: 120px; background-color: var(--brand-experiment); transition: background-color 0.3s;}
-        .profile-header { padding: 16px; display: flex; justify-content: flex-end; position: relative; height: 35px;}
-        .profile-avatar-large { width: 120px; height: 120px; border-radius: 50%; border: 8px solid var(--profile-card); position: absolute; top: -60px; left: 16px; background-color: var(--bg-primary); background-size: cover; background-position: center; display: flex; justify-content: center; align-items: center; font-size: 40px; color: white; font-weight: bold; }
-        .profile-names { padding: 10px 16px 20px 16px;}
-        .btn-primary { background-color: var(--brand-experiment); color: white; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer; transition: 0.3s; font-weight: bold;}
-        .btn-primary:hover { opacity: 0.9; }
-        .info-list { background-color: var(--bg-primary); border-radius: 8px; padding: 16px; margin: 0 16px 16px 16px; }
-        .info-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-        .settings-input { background-color: var(--bg-tertiary); border: none; color: white; padding: 10px; border-radius: 4px; outline: none; width: 250px; font-size: 14px;}
-        .btn-secondary { background-color: #4e5058; color: white; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer; font-weight: 600; transition: 0.2s;}
+        .profile-header { padding: 16px; display: flex; justify-content: flex-end; position: relative; height: 45px;}
+        .profile-avatar-large { width: 120px; height: 120px; border-radius: 50%; border: 8px solid var(--profile-card); position: absolute; top: -60px; left: 24px; background-color: var(--bg-primary); background-size: cover; background-position: center; display: flex; justify-content: center; align-items: center; font-size: 40px; color: white; font-weight: bold; box-sizing: content-box;}
+        .profile-names { padding: 10px 24px 24px 24px;}
+        .profile-names .name { color: white; font-size: 24px; font-weight: 800; letter-spacing: -0.5px;}
+        .profile-names .bio { color: var(--text-muted); font-size: 15px; margin-top: 6px; line-height: 1.4;}
+        
+        .btn-primary { background-color: var(--brand-experiment); color: white; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer; transition: 0.2s; font-weight: 600; font-family: 'Inter', sans-serif;}
+        .btn-primary:hover { opacity: 0.9; box-shadow: 0 4px 12px rgba(88, 101, 242, 0.3);}
+        
+        .info-list { background-color: var(--bg-secondary); border-radius: 12px; padding: 24px; margin: 0 24px 24px 24px; }
+        .info-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; }
+        .info-row:last-child { margin-bottom: 0; }
+        .info-label { color: var(--text-muted); font-size: 12px; font-weight: 800; margin-bottom: 8px; letter-spacing: 0.5px; text-transform: uppercase;}
+        .settings-input { background-color: var(--bg-tertiary); border: 1px solid rgba(255,255,255,0.05); color: white; padding: 12px; border-radius: 6px; outline: none; width: 280px; font-size: 15px; font-family: 'Inter', sans-serif; transition: 0.2s;}
+        .settings-input:focus { border-color: var(--brand-experiment); }
+        .btn-secondary { background-color: #4e5058; color: white; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer; font-weight: 600; transition: 0.2s; font-family: 'Inter', sans-serif;}
         .btn-secondary:hover { background-color: #6d6f78; }
-        select, input[type="color"] { background-color: var(--bg-tertiary); border: none; color: white; padding: 8px; border-radius: 4px; outline: none; cursor: pointer;}
+        
+        input[type="color"] { background-color: transparent; border: none; padding: 0; border-radius: 8px; cursor: pointer; width: 100px; height: 50px;}
+        input[type="color"]::-webkit-color-swatch-wrapper { padding: 0; }
+        input[type="color"]::-webkit-color-swatch { border: none; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.3);}
+        
         .mic-bar { height: 12px; background-color: var(--bg-tertiary); border-radius: 6px; margin-top: 15px; overflow: hidden; width: 100%; max-width: 400px;}
         .mic-level { height: 100%; background-color: var(--green-success); width: 0%; transition: width 0.1s;}
     </style>
@@ -123,7 +155,7 @@
             <div class="user-panel-avatar" id="nav-avatar"><div class="status-dot status-online" id="nav-status"></div></div>
             <div class="user-info">
                 <div class="username" id="nav-username">...</div>
-                <select id="status-select" style="background:transparent; padding:0; font-size:12px; color:var(--text-muted); border:none; outline:none; cursor:pointer;">
+                <select id="status-select">
                     <option value="online">En ligne</option>
                     <option value="idle">Absent</option>
                     <option value="dnd">Ne pas déranger</option>
@@ -142,8 +174,9 @@
         <div class="input-area"><div class="input-wrapper"><form id="form" style="flex-grow:1;display:flex;"><input id="input" autocomplete="off" placeholder="Envoyer un message..." /></form></div></div>
     </div>
 
+    <!-- MODAL APPEL -->
     <div id="call-modal">
-        <div style="color:white; font-weight:bold; margin-bottom:15px; font-size: 18px;">📞 Appel entrant...</div>
+        <div style="color:white; font-weight:800; margin-bottom:15px; font-size: 18px;">📞 Appel entrant...</div>
         <div style="display:flex; gap:10px;">
             <button class="btn-primary" style="background-color:var(--green-success);" onclick="acceptCall()">Répondre</button>
             <button class="btn-primary" style="background-color:var(--red-danger);" onclick="rejectCall()">Ignorer</button>
@@ -151,7 +184,7 @@
     </div>
     <audio id="remote-audio" autoplay></audio>
 
-    <!-- ÉCRAN DES PARAMÈTRES -->
+    <!-- ÉCRAN DES PARAMÈTRES (DESIGN PRO) -->
     <div id="settings-screen">
         <div class="settings-sidebar">
             <div class="settings-nav">
@@ -159,50 +192,69 @@
                 <div class="settings-item" onclick="openSettings('apparence')" id="nav-apparence">Apparence</div>
                 <div class="settings-item" onclick="openSettings('voix')" id="nav-voix">Voix & Vidéo</div>
                 <div class="settings-item" onclick="openSettings('notifs')" id="nav-notifs">Notifications</div>
-                <div class="settings-separator" style="height:1px; background:rgba(255,255,255,0.1); margin:10px 0;"></div>
+                <div style="height:1px; background:rgba(255,255,255,0.06); margin:12px 0;"></div>
                 <div class="settings-item" id="logout-btn" style="color:var(--red-danger);">Déconnexion</div>
             </div>
         </div>
         
         <div class="settings-content active" id="tab-compte">
             <div class="close-settings" onclick="closeSettings()">✕</div>
-            <h2 style="color: white; margin-top:0; font-size:24px;">Mon compte</h2>
+            <h2 style="color: white; margin-top:0; font-size:28px; font-weight:800;">Mon compte</h2>
+            
             <div class="profile-card">
                 <div class="profile-banner"></div>
                 <div class="profile-header">
                     <div class="profile-avatar-large" id="settings-avatar"></div>
-                    <label for="avatar-upload" class="btn-primary" style="cursor:pointer; line-height:18px;">Changer d'avatar</label>
+                    <label for="avatar-upload" class="btn-primary" style="cursor:pointer; line-height:20px;">Changer d'avatar</label>
                     <input type="file" id="avatar-upload" accept="image/*" style="display:none;">
                 </div>
                 <div class="profile-names">
-                    <div style="color: white; font-size: 22px; font-weight: bold;" id="settings-display-name">...</div>
-                    <div style="color: var(--text-muted); font-size: 14px; margin-top:4px;" id="settings-bio-text">...</div>
+                    <div class="name" id="settings-display-name">...</div>
+                    <div class="bio" id="settings-bio-text">...</div>
                 </div>
                 <div class="info-list">
-                    <div class="info-row"><div><div style="color:var(--text-muted); font-size:12px; font-weight:bold; margin-bottom:4px;">NOM D'AFFICHAGE</div><input type="text" id="input-displayname" class="settings-input"></div><button class="btn-secondary" onclick="saveSetting('displayName')">Sauvegarder</button></div>
-                    <div class="info-row"><div><div style="color:var(--text-muted); font-size:12px; font-weight:bold; margin-bottom:4px;">A PROPOS DE MOI</div><input type="text" id="input-bio" class="settings-input" placeholder="Écris ta bio..."></div><button class="btn-secondary" onclick="saveSetting('bio')">Sauvegarder</button></div>
-                    <div class="info-row"><div><div style="color:var(--text-muted); font-size:12px; font-weight:bold; margin-bottom:4px;">NOUVEAU MOT DE PASSE</div><input type="password" id="input-password" class="settings-input" placeholder="Laisser vide pour ne pas changer"></div><button class="btn-secondary" onclick="saveSetting('password')">Sauvegarder</button></div>
+                    <div class="info-row">
+                        <div>
+                            <div class="info-label">NOM D'AFFICHAGE</div>
+                            <input type="text" id="input-displayname" class="settings-input">
+                        </div>
+                        <button class="btn-secondary" onclick="saveSetting('displayName')">Sauvegarder</button>
+                    </div>
+                    <div class="info-row">
+                        <div>
+                            <div class="info-label">A PROPOS DE MOI</div>
+                            <input type="text" id="input-bio" class="settings-input" placeholder="Écris ta bio...">
+                        </div>
+                        <button class="btn-secondary" onclick="saveSetting('bio')">Sauvegarder</button>
+                    </div>
+                    <div class="info-row">
+                        <div>
+                            <div class="info-label">NOUVEAU MOT DE PASSE</div>
+                            <input type="password" id="input-password" class="settings-input" placeholder="Laisser vide pour ne pas changer">
+                        </div>
+                        <button class="btn-secondary" onclick="saveSetting('password')">Sauvegarder</button>
+                    </div>
                 </div>
             </div>
         </div>
 
         <div class="settings-content" id="tab-apparence">
             <div class="close-settings" onclick="closeSettings()">✕</div>
-            <h2 style="color: white; margin-top:0; font-size:24px;">Apparence</h2>
-            <div style="margin-bottom:20px; color:var(--text-normal); font-size:15px;">Personnalise ton expérience. Choisis la couleur principale de ton interface Aurora.</div>
-            <div style="background:var(--profile-card); padding:20px; border-radius:8px;">
-                <div style="color:white; font-weight:bold; margin-bottom:10px;">Couleur du Thème</div>
-                <input type="color" id="theme-color-picker" value="#5865F2" style="width:120px; height:50px;">
-                <button class="btn-primary" style="margin-top:15px; display:block;" onclick="saveTheme()">Appliquer le thème</button>
+            <h2 style="color: white; margin-top:0; font-size:28px; font-weight:800;">Apparence</h2>
+            <div style="background:var(--profile-card); padding:24px; border-radius:12px; box-shadow: 0 4px 15px rgba(0,0,0,0.2);">
+                <div style="color:white; font-weight:700; margin-bottom:8px; font-size:16px;">Couleur du Thème</div>
+                <div style="color:var(--text-muted); font-size:14px; margin-bottom:20px;">Personnalise ton expérience en modifiant la couleur principale de ton interface.</div>
+                <input type="color" id="theme-color-picker" value="#5865F2">
+                <button class="btn-primary" style="margin-top:20px; display:block;" onclick="saveTheme()">Appliquer le thème</button>
             </div>
         </div>
 
         <div class="settings-content" id="tab-voix">
             <div class="close-settings" onclick="closeSettings()">✕</div>
-            <h2 style="color: white; margin-top:0; font-size:24px;">Voix & Vidéo</h2>
-            <div style="background:var(--profile-card); padding:20px; border-radius:8px;">
-                <div style="color:white; font-weight:bold; margin-bottom:10px;">Test du micro</div>
-                <div style="color:var(--text-muted); font-size:14px; margin-bottom:15px;">Parle pour vérifier que ton micro est bien détecté par l'application.</div>
+            <h2 style="color: white; margin-top:0; font-size:28px; font-weight:800;">Voix & Vidéo</h2>
+            <div style="background:var(--profile-card); padding:24px; border-radius:12px; box-shadow: 0 4px 15px rgba(0,0,0,0.2);">
+                <div style="color:white; font-weight:700; margin-bottom:8px; font-size:16px;">Test du micro</div>
+                <div style="color:var(--text-muted); font-size:14px; margin-bottom:20px;">Parle pour vérifier que ton micro est bien détecté par l'application.</div>
                 <button class="btn-secondary" id="btn-test-mic" onclick="toggleMicTest()">Commencer le test</button>
                 <div class="mic-bar"><div class="mic-level" id="mic-level"></div></div>
             </div>
@@ -210,25 +262,28 @@
 
         <div class="settings-content" id="tab-notifs">
             <div class="close-settings" onclick="closeSettings()">✕</div>
-            <h2 style="color: white; margin-top:0; font-size:24px;">Notifications</h2>
-            <div class="info-row" style="background:var(--profile-card); padding:20px; border-radius:8px;">
-                <div>
-                    <div style="color:white; font-weight:bold; font-size:16px;">Notifications Sonores</div>
-                    <div style="color:var(--text-muted); font-size:13px; margin-top:4px;">Joue un petit "bip" quand tu reçois un message privé.</div>
+            <h2 style="color: white; margin-top:0; font-size:28px; font-weight:800;">Notifications</h2>
+            <div style="background:var(--profile-card); border-radius:12px; padding: 24px; box-shadow: 0 4px 15px rgba(0,0,0,0.2);">
+                <div class="info-row" style="margin-bottom: 24px;">
+                    <div>
+                        <div style="color:white; font-weight:700; font-size:16px;">Notifications Sonores</div>
+                        <div style="color:var(--text-muted); font-size:14px; margin-top:4px;">Joue un petit son quand tu reçois un message.</div>
+                    </div>
+                    <input type="checkbox" id="toggle-sound" checked onchange="saveAppPrefs()" style="width:24px; height:24px; cursor:pointer;">
                 </div>
-                <input type="checkbox" id="toggle-sound" checked onchange="saveAppPrefs()" style="width:24px; height:24px; cursor:pointer;">
-            </div>
-            <div class="info-row" style="background:var(--profile-card); padding:20px; border-radius:8px;">
-                <div>
-                    <div style="color:white; font-weight:bold; font-size:16px;">Notifications Bureau Windows</div>
-                    <div style="color:var(--text-muted); font-size:13px; margin-top:4px;">Affiche une bulle en bas à droite de l'écran.</div>
+                <div style="height:1px; background:rgba(255,255,255,0.05); margin-bottom:24px;"></div>
+                <div class="info-row" style="margin-bottom: 0;">
+                    <div>
+                        <div style="color:white; font-weight:700; font-size:16px;">Notifications Bureau Windows</div>
+                        <div style="color:var(--text-muted); font-size:14px; margin-top:4px;">Affiche une bulle en bas à droite de l'écran.</div>
+                    </div>
+                    <input type="checkbox" id="toggle-desktop" onchange="enableDesktopNotifs()" style="width:24px; height:24px; cursor:pointer;">
                 </div>
-                <input type="checkbox" id="toggle-desktop" onchange="enableDesktopNotifs()" style="width:24px; height:24px; cursor:pointer;">
             </div>
         </div>
     </div>
 
-    <!-- LOGIQUE JAVASCRIPT ET CONNEXION -->
+    <!-- SCRIPTS -->
     <script src="https://cdn.socket.io/4.7.4/socket.io.min.js"></script>
     <script>
         var socket = io('https://aurora-chat-server.onrender.com', { transports: ['websocket', 'polling'] });
@@ -242,15 +297,13 @@
 
         socket.on('connect_error', (err) => {
             document.getElementById('login-error').textContent = "Le serveur dort ou est injoignable. Réessayez dans 10 sec."; 
-            document.getElementById('login-error').style.display='block'; 
-            document.getElementById('login-btn').textContent = "Se connecter";
+            document.getElementById('login-error').style.display='block'; document.getElementById('login-btn').textContent = "Se connecter";
         });
 
         document.getElementById('login-btn').onclick = () => {
             const u = document.getElementById('login-username').value; const p = document.getElementById('login-password').value;
             if(u&&p) {
-                document.getElementById('login-btn').textContent = "Connexion en cours...";
-                document.getElementById('login-error').style.display = 'none';
+                document.getElementById('login-btn').textContent = "Connexion en cours..."; document.getElementById('login-error').style.display = 'none';
                 let timeout = setTimeout(() => { document.getElementById('login-error').textContent = "Réveil du serveur Render en cours... Recliquez."; document.getElementById('login-error').style.display='block'; document.getElementById('login-btn').textContent = "Se connecter"; }, 8000);
                 socket.emit('login', {loginName:u, password:p}, res => {
                     clearTimeout(timeout);
