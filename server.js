@@ -24,18 +24,31 @@ const io = new Server(server, {
 
 app.use(express.static('public'));
 
-// ☁️ Configuration Cloudinary (Images)
+// 🚀 ROUTE ANTI-SOMMEIL (Pour Render)
+app.get('/ping', (req, res) => {
+  res.status(200).send('Serveur réveillé !');
+});
+
+// ☁️ Configuration Cloudinary
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
   api_key: process.env.CLOUDINARY_API_KEY,
   api_secret: process.env.CLOUDINARY_API_SECRET
 });
 
-const storage = new CloudinaryStorage({
+// Stockage pour les Avatars
+const avatarStorage = new CloudinaryStorage({
   cloudinary: cloudinary,
   params: { folder: 'aurora_avatars', allowed_formats: ['jpg', 'png', 'jpeg', 'gif'] },
 });
-const upload = multer({ storage: storage });
+const uploadAvatar = multer({ storage: avatarStorage });
+
+// 🖼️ NOUVEAU : Stockage pour les Images du Chat
+const chatStorage = new CloudinaryStorage({
+  cloudinary: cloudinary,
+  params: { folder: 'aurora_chat', allowed_formats: ['jpg', 'png', 'jpeg', 'gif', 'webp'] },
+});
+const uploadChat = multer({ storage: chatStorage });
 
 // 🗄️ Connexion Base de données
 mongoose.connect(process.env.MONGO_URI)
@@ -62,15 +75,29 @@ const MessageSchema = new mongoose.Schema({
 });
 const Message = mongoose.model('Message', MessageSchema);
 
-// 📡 Routes API
-app.post('/upload-avatar', upload.single('avatar'), (req, res) => {
+// 📡 ROUTES D'UPLOAD
+app.post('/upload-avatar', uploadAvatar.single('avatar'), (req, res) => {
   if (req.file && req.file.path) res.json({ success: true, url: req.file.path });
   else res.status(500).json({ success: false });
 });
 
-// 🔌 Logique Temps Réel (Socket.io)
+// 🖼️ NOUVELLE ROUTE : Recevoir les images du chat
+app.post('/upload-image', uploadChat.single('image'), (req, res) => {
+  if (req.file && req.file.path) res.json({ success: true, url: req.file.path });
+  else res.status(500).json({ success: false });
+});
+
+// 🛡️ FONCTION ANTI-HACK
+function escapeHTML(str) {
+  return str.replace(/[&<>'"]/g, tag => ({
+    '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;'
+  }[tag] || tag));
+}
+
+// 🔌 Logique Temps Réel
 io.on('connection', (socket) => {
   let currentUserId = null;
+  let currentUserDisplayName = null;
 
   socket.on('login', async ({ loginName, password }, callback) => {
     try {
@@ -89,6 +116,7 @@ io.on('connection', (socket) => {
       }
 
       currentUserId = user._id.toString();
+      currentUserDisplayName = user.displayName;
       socket.join('general');
       
       callback({ success: true, userData: { id: user._id, login: user.login, displayName: user.displayName, avatar: user.avatar, bio: user.bio, status: user.status, themeColor: user.themeColor } });
@@ -110,16 +138,26 @@ io.on('connection', (socket) => {
   socket.on('chat message', async (data) => {
     const user = await User.findById(currentUserId);
     if (!user) return;
-    const msg = new Message({ room: data.room, authorId: currentUserId, authorName: user.displayName, avatar: user.avatar, text: data.text, time: new Date().toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' }) });
+    
+    const safeText = escapeHTML(data.text); // Sécurité
+    
+    const msg = new Message({ room: data.room, authorId: currentUserId, authorName: user.displayName, avatar: user.avatar, text: safeText, time: new Date().toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' }) });
     await msg.save();
     io.to(data.room).emit('chat message', { room: data.room, message: msg });
-    if(data.room !== 'general') socket.to(data.room).emit('notification', { room: data.room, fromId: currentUserId, authorName: user.displayName, text: data.text });
+    if(data.room !== 'general') socket.to(data.room).emit('notification', { room: data.room, fromId: currentUserId, authorName: user.displayName, text: safeText });
+  });
+
+  socket.on('typing', (room) => {
+    if (currentUserDisplayName) socket.to(room).emit('typing', { name: currentUserDisplayName, room: room });
+  });
+  socket.on('stop typing', (room) => {
+    if (currentUserDisplayName) socket.to(room).emit('stop typing', { name: currentUserDisplayName, room: room });
   });
 
   socket.on('update profile', async (newData, callback) => {
     const user = await User.findById(currentUserId);
     if (user) {
-      if (newData.displayName) user.displayName = newData.displayName;
+      if (newData.displayName) { user.displayName = newData.displayName; currentUserDisplayName = newData.displayName; }
       if (newData.avatar !== undefined) user.avatar = newData.avatar;
       if (newData.bio !== undefined) user.bio = newData.bio;
       if (newData.status) user.status = newData.status;
@@ -133,7 +171,6 @@ io.on('connection', (socket) => {
     }
   });
 
-  // Appels WebRTC
   socket.on('webrtc-offer', (data) => socket.to(data.room).emit('webrtc-offer', data));
   socket.on('webrtc-answer', (data) => socket.to(data.room).emit('webrtc-answer', data));
   socket.on('webrtc-ice-candidate', (data) => socket.to(data.room).emit('webrtc-ice-candidate', data));

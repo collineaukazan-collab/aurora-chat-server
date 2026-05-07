@@ -3,28 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <title>Aurora Chat</title>
-    <!-- 🌟 IMPORTATION DE LA POLICE PRO 'INTER' -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     
     <style>
         :root { --bg-tertiary: #1e1f22; --bg-secondary: #2b2d31; --bg-primary: #313338; --bg-message-hover: #2e3035; --bg-modifier-hover: rgba(255,255,255,0.06); --text-normal: #dbdee1; --text-muted: #949ba4; --brand-experiment: #5865F2; --green-success: #23a559; --yellow-idle: #f0b232; --red-danger: #da373c; --grey-offline: #80848e; --profile-card: #111214; }
-        
-        /* Police globale et fond */
         body { font-family: 'Inter', sans-serif; margin: 0; padding: 0; display: flex; height: 100vh; background-color: var(--bg-primary); color: var(--text-normal); overflow: hidden; -webkit-font-smoothing: antialiased; }
-        
-        /* 🌟 SCROLLBARS INVISIBLES ET PROPRES */
-        ::-webkit-scrollbar { width: 8px; height: 8px; }
-        ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { background: #1a1b1e; border-radius: 4px; }
-        ::-webkit-scrollbar-thumb:hover { background: #202225; }
+        ::-webkit-scrollbar { width: 8px; height: 8px; } ::-webkit-scrollbar-track { background: transparent; } ::-webkit-scrollbar-thumb { background: #1a1b1e; border-radius: 4px; } ::-webkit-scrollbar-thumb:hover { background: #202225; }
 
-        /* BACKGROUND ANIMÉ */
         @keyframes auroraAnim { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
         #login-screen { position: absolute; inset: 0; background: linear-gradient(-45deg, #0f1013, #1e1f22, #5865F2, #23a559, #9b59b6); background-size: 400% 400%; animation: auroraAnim 15s ease infinite; display: flex; justify-content: center; align-items: center; z-index: 2000; }
-        
-        /* BOÎTE DE CONNEXION */
         .login-box { background-color: rgba(43, 45, 49, 0.7); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); padding: 48px; border-radius: 20px; width: 420px; text-align: center; box-shadow: 0 20px 40px rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.05); }
         .login-box h2 { color: white; margin: 0 0 30px 0; font-size: 32px; font-weight: 800; letter-spacing: -0.5px;}
         .login-box input { width: 100%; box-sizing: border-box; padding: 15px; margin-bottom: 20px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.05); background-color: rgba(30, 31, 34, 0.8); color: white; outline: none; font-size: 15px; transition: 0.2s; font-family: 'Inter', sans-serif;}
@@ -34,11 +23,9 @@
         #login-error { color: #ff6b6b; font-size: 14px; margin-bottom: 20px; display: none; font-weight: 600; background: rgba(255, 107, 107, 0.1); padding: 12px; border-radius: 8px;}
         #app-version { position: absolute; bottom: 20px; right: 25px; color: rgba(255,255,255,0.5); font-size: 13px; font-weight: 600; background: rgba(0,0,0,0.4); padding: 6px 12px; border-radius: 20px; backdrop-filter: blur(5px); pointer-events: none;}
 
-        /* UI PRINCIPALE */
         .servers { width: 72px; background-color: var(--bg-tertiary); display: flex; flex-direction: column; align-items: center; padding-top: 16px; gap: 10px; z-index: 10; }
         .server-icon { width: 48px; height: 48px; background-color: var(--bg-primary); border-radius: 50%; display: flex; justify-content: center; align-items: center; cursor: pointer; color: white; font-weight: 700; font-size: 18px; transition: 0.2s ease-out;}
-        .server-icon:hover { border-radius: 16px; background-color: var(--brand-experiment); }
-        .server-icon.active { border-radius: 16px; background-color: var(--brand-experiment); box-shadow: 0 4px 15px rgba(88, 101, 242, 0.4);}
+        .server-icon:hover, .server-icon.active { border-radius: 16px; background-color: var(--brand-experiment); }
         .server-separator { width: 32px; height: 2px; background-color: rgba(255,255,255,0.06); margin: 4px 0;}
         
         .sidebar { width: 250px; background-color: var(--bg-secondary); display: flex; flex-direction: column; border-top-left-radius: 12px;}
@@ -47,13 +34,14 @@
         .channel-item { padding: 10px; border-radius: 8px; cursor: pointer; color: var(--text-muted); display: flex; align-items: center; gap: 12px; margin-bottom: 4px; font-weight: 500; transition: 0.1s;}
         .channel-item:hover, .channel-item.active { background-color: var(--bg-modifier-hover); color: white; }
         
-        .channel-avatar { width: 36px; height: 36px; border-radius: 50%; background-size: cover; background-position: center; display: flex; justify-content: center; align-items: center; color: white; font-weight: bold; position: relative;}
+        .channel-avatar, .user-panel-avatar, .msg-avatar { border-radius: 50%; background-size: cover; background-position: center; display: flex; justify-content: center; align-items: center; color: white; font-weight: bold; position: relative;}
+        .channel-avatar { width: 36px; height: 36px; } .user-panel-avatar { width: 36px; height: 36px; cursor: pointer; } .msg-avatar { width: 44px; height: 44px; position: absolute; left: 20px; font-size: 18px; cursor: pointer; }
+        
         .status-dot { position: absolute; bottom: -2px; right: -2px; width: 12px; height: 12px; border-radius: 50%; border: 3px solid var(--bg-secondary); }
         .status-online { background-color: var(--green-success); } .status-idle { background-color: var(--yellow-idle); } .status-dnd { background-color: var(--red-danger); } .status-invisible { background-color: var(--grey-offline); }
         .notification-badge { background-color: var(--red-danger); color: white; font-size: 11px; font-weight: bold; padding: 2px 6px; border-radius: 12px; position: absolute; right: 10px; display: none; }
         
         .user-panel { background-color: #232428; padding: 0 12px; height: 56px; display: flex; align-items: center; gap: 12px; }
-        .user-panel-avatar { width: 36px; height: 36px; border-radius: 50%; background-size: cover; background-position: center; position: relative; cursor: pointer;}
         .user-info { flex-grow: 1; overflow: hidden; display: flex; flex-direction: column; justify-content: center;}
         .user-info .username { color: white; font-weight: 700; font-size: 14px; white-space: nowrap; text-overflow: ellipsis; overflow: hidden; margin-bottom: 2px;}
         #status-select { background: transparent; padding: 0; font-size: 12px; color: var(--text-muted); border: none; outline: none; cursor: pointer; font-family: 'Inter', sans-serif; font-weight: 500; appearance: none; -webkit-appearance: none;}
@@ -61,15 +49,14 @@
         .btn-icon { background: transparent; border: none; color: var(--text-muted); cursor: pointer; font-size: 18px; padding: 8px; border-radius: 6px; transition: 0.2s;}
         .btn-icon:hover { color: white; background: var(--bg-modifier-hover);}
         
-        .chat { flex-grow: 1; display: flex; flex-direction: column; background-color: var(--bg-primary); }
+        .chat { flex-grow: 1; display: flex; flex-direction: column; background-color: var(--bg-primary); position: relative;}
         .chat-header { height: 56px; padding: 0 20px; border-bottom: 1px solid #25262a; display: flex; align-items: center; justify-content: space-between; font-weight: 600; color: white; font-size: 16px;}
-        .call-btn { background-color: var(--green-success); color: white; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-weight: 600; display: none; gap: 8px; align-items: center; transition: 0.2s; font-family: 'Inter', sans-serif;}
+        .call-btn { background-color: var(--green-success); color: white; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-weight: 600; display: flex; gap: 8px; align-items: center; transition: 0.2s; font-family: 'Inter', sans-serif;}
         .call-btn:hover { background-color: #1f9450; } .call-btn.active { background-color: var(--red-danger); } .call-btn.active:hover { background-color: #c02d32; }
         
         #messages { flex-grow: 1; overflow-y: auto; padding: 20px 0; }
         .message { display: flex; gap: 16px; padding: 6px 20px 6px 80px; position: relative; margin-top: 17px; }
         .message:hover { background-color: var(--bg-message-hover); }
-        .msg-avatar { position: absolute; left: 20px; width: 44px; height: 44px; border-radius: 50%; background-size: cover; background-position: center; cursor: pointer;}
         .msg-content { display: flex; flex-direction: column; }
         .msg-header { display: flex; gap: 10px; margin-bottom: 4px; align-items: baseline;}
         .msg-author { font-weight: 600; color: white; font-size: 16px; cursor: pointer;}
@@ -77,16 +64,28 @@
         .msg-time { color: var(--text-muted); font-size: 12px; font-weight: 500;}
         .msg-text { color: var(--text-normal); font-size: 15px; line-height: 1.5;}
         
+        /* 🖼️ CSS POUR LES IMAGES ET LE MARKDOWN */
+        .chat-image { max-width: 350px; max-height: 350px; border-radius: 8px; margin-top: 8px; cursor: pointer; border: 1px solid rgba(255,255,255,0.1); transition: 0.2s;}
+        .chat-image:hover { opacity: 0.9; box-shadow: 0 4px 12px rgba(0,0,0,0.5);}
+        .msg-text strong { color: white; font-weight: 700; }
+        .msg-text em { font-style: italic; }
+        .msg-text code { background-color: #1e1f22; padding: 2px 6px; border-radius: 4px; font-family: Consolas, monospace; font-size: 13px; border: 1px solid rgba(255,255,255,0.05); color: #e5e5e5;}
+        
+        /* BOUTON ATTACHE (TROMBONE) */
+        .attach-btn { background: transparent; border: none; color: var(--text-muted); font-size: 20px; cursor: pointer; padding: 10px; border-radius: 50%; transition: 0.2s; display: flex; align-items: center; justify-content: center;}
+        .attach-btn:hover { color: white; background: var(--bg-modifier-hover);}
+
+        .typing-indicator { height: 20px; font-size: 12px; font-weight: 600; color: var(--brand-experiment); padding: 0 24px; opacity: 0; transition: opacity 0.3s; pointer-events: none;}
+        .typing-indicator.visible { opacity: 1; }
+
         .input-area { padding: 0 20px 24px 20px; }
-        .input-wrapper { display: flex; align-items: center; background-color: #383a40; border-radius: 12px; padding: 0 16px; min-height: 50px; }
-        #input { flex-grow: 1; background: transparent; border: none; color: white; outline: none; font-size: 15px; padding: 15px 0; font-family: 'Inter', sans-serif;}
+        .input-wrapper { display: flex; align-items: center; background-color: #383a40; border-radius: 12px; padding: 0 10px; min-height: 50px; gap: 5px;}
+        #input { flex-grow: 1; background: transparent; border: none; color: white; outline: none; font-size: 15px; padding: 15px 10px; font-family: 'Inter', sans-serif;}
         #input::placeholder { color: #80848e; }
         
-        /* MODAL APPEL */
         #call-modal { position: absolute; top: 20px; right: 20px; background: var(--profile-card); padding: 20px; border-radius: 12px; box-shadow: 0 8px 30px rgba(0,0,0,0.6); z-index: 3000; display: none; border: 1px solid rgba(255,255,255,0.05); }
         
-        /* ⚙️ PARAMÈTRES (LE GLOW-UP) ⚙️ */
-        #settings-screen { position: absolute; inset: 0; background-color: var(--bg-primary); display: none; z-index: 1000; }
+        #settings-screen { position: absolute; inset: 0; background-color: var(--bg-primary); display: none; flex-direction: row; z-index: 1000; }
         .settings-sidebar { width: 35%; background-color: var(--bg-secondary); display: flex; justify-content: flex-end; padding-top: 80px; }
         .settings-nav { width: 240px; padding: 0 20px; }
         .settings-item { padding: 12px 14px; color: #b5bac1; border-radius: 8px; cursor: pointer; margin-bottom: 6px; font-weight: 600; transition: 0.2s;}
@@ -97,18 +96,16 @@
         .close-settings { position: absolute; top: 40px; right: 60px; width: 40px; height: 40px; border: 2px solid var(--text-muted); border-radius: 50%; display: flex; justify-content: center; align-items: center; color: var(--text-muted); cursor: pointer; transition: 0.2s; font-weight: bold;}
         .close-settings:hover { border-color: white; color: white; transform: rotate(90deg); background: rgba(255,255,255,0.1);}
         
-        /* 🪪 CARTE DE PROFIL PRO */
         .profile-card { background-color: var(--profile-card); border-radius: 16px; margin-bottom: 40px; overflow: hidden; box-shadow: 0 8px 24px rgba(0,0,0,0.2);}
         .profile-banner { height: 120px; background-color: var(--brand-experiment); transition: background-color 0.3s;}
         .profile-header { padding: 16px; display: flex; justify-content: flex-end; position: relative; height: 45px;}
-        .profile-avatar-large { width: 120px; height: 120px; border-radius: 50%; border: 8px solid var(--profile-card); position: absolute; top: -60px; left: 24px; background-color: var(--bg-primary); background-size: cover; background-position: center; display: flex; justify-content: center; align-items: center; font-size: 40px; color: white; font-weight: bold; box-sizing: content-box;}
+        .profile-avatar-large { width: 120px; height: 120px; border-radius: 50%; border: 8px solid var(--profile-card); position: absolute; top: -60px; left: 24px; background-color: var(--bg-primary); background-size: cover; background-position: center; display: flex; justify-content: center; align-items: center; font-size: 50px; color: white; font-weight: bold; box-sizing: content-box;}
         .profile-names { padding: 10px 24px 24px 24px;}
         .profile-names .name { color: white; font-size: 24px; font-weight: 800; letter-spacing: -0.5px;}
         .profile-names .bio { color: var(--text-muted); font-size: 15px; margin-top: 6px; line-height: 1.4;}
         
         .btn-primary { background-color: var(--brand-experiment); color: white; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer; transition: 0.2s; font-weight: 600; font-family: 'Inter', sans-serif;}
         .btn-primary:hover { opacity: 0.9; box-shadow: 0 4px 12px rgba(88, 101, 242, 0.3);}
-        
         .info-list { background-color: var(--bg-secondary); border-radius: 12px; padding: 24px; margin: 0 24px 24px 24px; }
         .info-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; }
         .info-row:last-child { margin-bottom: 0; }
@@ -117,7 +114,6 @@
         .settings-input:focus { border-color: var(--brand-experiment); }
         .btn-secondary { background-color: #4e5058; color: white; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer; font-weight: 600; transition: 0.2s; font-family: 'Inter', sans-serif;}
         .btn-secondary:hover { background-color: #6d6f78; }
-        
         input[type="color"] { background-color: transparent; border: none; padding: 0; border-radius: 8px; cursor: pointer; width: 100px; height: 50px;}
         input[type="color"]::-webkit-color-swatch-wrapper { padding: 0; }
         input[type="color"]::-webkit-color-swatch { border: none; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.3);}
@@ -127,9 +123,8 @@
     </style>
 </head>
 <body>
-    <!-- ÉCRAN DE CONNEXION -->
     <div id="login-screen">
-        <div id="app-version">Version 1.0.4</div>
+        <div id="app-version">Version 2.1.0 (Pro)</div>
         <div class="login-box">
             <h2>Aurora</h2>
             <div id="login-error"></div>
@@ -139,7 +134,6 @@
         </div>
     </div>
 
-    <!-- UI PRINCIPALE -->
     <div class="servers">
         <div class="server-icon active" onclick="switchRoom('general')">🌐</div>
         <div class="server-separator"></div>
@@ -156,10 +150,7 @@
             <div class="user-info">
                 <div class="username" id="nav-username">...</div>
                 <select id="status-select">
-                    <option value="online">En ligne</option>
-                    <option value="idle">Absent</option>
-                    <option value="dnd">Ne pas déranger</option>
-                    <option value="invisible">Invisible</option>
+                    <option value="online">En ligne</option><option value="idle">Absent</option><option value="dnd">Ne pas déranger</option><option value="invisible">Invisible</option>
                 </select>
             </div>
             <button class="btn-icon" onclick="openSettings('compte')">⚙️</button>
@@ -168,23 +159,31 @@
     <div class="chat">
         <div class="chat-header">
             <div id="chat-title">🌐 # discussions</div>
-            <button class="call-btn" id="start-call-btn" onclick="toggleCall()" style="display: none;">📞 Appeler</button>
+            <button class="call-btn" id="start-call-btn" onclick="toggleCall()">📞 Appeler</button>
         </div>
         <div id="messages"></div>
-        <div class="input-area"><div class="input-wrapper"><form id="form" style="flex-grow:1;display:flex;"><input id="input" autocomplete="off" placeholder="Envoyer un message..." /></form></div></div>
+        
+        <div class="typing-indicator" id="typing-indicator">Quelqu'un est en train d'écrire...</div>
+        
+        <div class="input-area">
+            <div class="input-wrapper">
+                <!-- 📎 NOUVEAU : BOUTON ENVOI IMAGE -->
+                <label for="chat-image-upload" class="attach-btn" title="Envoyer une image">➕</label>
+                <input type="file" id="chat-image-upload" accept="image/*" style="display:none;">
+                
+                <form id="form" style="flex-grow:1;display:flex;">
+                    <input id="input" autocomplete="off" placeholder="Envoyer un message..." />
+                </form>
+            </div>
+        </div>
     </div>
 
-    <!-- MODAL APPEL -->
     <div id="call-modal">
         <div style="color:white; font-weight:800; margin-bottom:15px; font-size: 18px;">📞 Appel entrant...</div>
-        <div style="display:flex; gap:10px;">
-            <button class="btn-primary" style="background-color:var(--green-success);" onclick="acceptCall()">Répondre</button>
-            <button class="btn-primary" style="background-color:var(--red-danger);" onclick="rejectCall()">Ignorer</button>
-        </div>
+        <div style="display:flex; gap:10px;"><button class="btn-primary" style="background-color:var(--green-success);" onclick="acceptCall()">Répondre</button><button class="btn-primary" style="background-color:var(--red-danger);" onclick="rejectCall()">Ignorer</button></div>
     </div>
     <audio id="remote-audio" autoplay></audio>
 
-    <!-- ÉCRAN DES PARAMÈTRES (DESIGN PRO) -->
     <div id="settings-screen">
         <div class="settings-sidebar">
             <div class="settings-nav">
@@ -200,7 +199,6 @@
         <div class="settings-content active" id="tab-compte">
             <div class="close-settings" onclick="closeSettings()">✕</div>
             <h2 style="color: white; margin-top:0; font-size:28px; font-weight:800;">Mon compte</h2>
-            
             <div class="profile-card">
                 <div class="profile-banner"></div>
                 <div class="profile-header">
@@ -213,27 +211,9 @@
                     <div class="bio" id="settings-bio-text">...</div>
                 </div>
                 <div class="info-list">
-                    <div class="info-row">
-                        <div>
-                            <div class="info-label">NOM D'AFFICHAGE</div>
-                            <input type="text" id="input-displayname" class="settings-input">
-                        </div>
-                        <button class="btn-secondary" onclick="saveSetting('displayName')">Sauvegarder</button>
-                    </div>
-                    <div class="info-row">
-                        <div>
-                            <div class="info-label">A PROPOS DE MOI</div>
-                            <input type="text" id="input-bio" class="settings-input" placeholder="Écris ta bio...">
-                        </div>
-                        <button class="btn-secondary" onclick="saveSetting('bio')">Sauvegarder</button>
-                    </div>
-                    <div class="info-row">
-                        <div>
-                            <div class="info-label">NOUVEAU MOT DE PASSE</div>
-                            <input type="password" id="input-password" class="settings-input" placeholder="Laisser vide pour ne pas changer">
-                        </div>
-                        <button class="btn-secondary" onclick="saveSetting('password')">Sauvegarder</button>
-                    </div>
+                    <div class="info-row"><div><div class="info-label">NOM D'AFFICHAGE</div><input type="text" id="input-displayname" class="settings-input"></div><button class="btn-secondary" onclick="saveSetting('displayName')">Sauvegarder</button></div>
+                    <div class="info-row"><div><div class="info-label">A PROPOS DE MOI</div><input type="text" id="input-bio" class="settings-input" placeholder="Écris ta bio..."></div><button class="btn-secondary" onclick="saveSetting('bio')">Sauvegarder</button></div>
+                    <div class="info-row"><div><div class="info-label">NOUVEAU MOT DE PASSE</div><input type="password" id="input-password" class="settings-input" placeholder="Laisser vide pour ne pas changer"></div><button class="btn-secondary" onclick="saveSetting('password')">Sauvegarder</button></div>
                 </div>
             </div>
         </div>
@@ -265,18 +245,12 @@
             <h2 style="color: white; margin-top:0; font-size:28px; font-weight:800;">Notifications</h2>
             <div style="background:var(--profile-card); border-radius:12px; padding: 24px; box-shadow: 0 4px 15px rgba(0,0,0,0.2);">
                 <div class="info-row" style="margin-bottom: 24px;">
-                    <div>
-                        <div style="color:white; font-weight:700; font-size:16px;">Notifications Sonores</div>
-                        <div style="color:var(--text-muted); font-size:14px; margin-top:4px;">Joue un petit son quand tu reçois un message.</div>
-                    </div>
+                    <div><div style="color:white; font-weight:700; font-size:16px;">Notifications Sonores</div><div style="color:var(--text-muted); font-size:14px; margin-top:4px;">Joue un petit son quand tu reçois un message.</div></div>
                     <input type="checkbox" id="toggle-sound" checked onchange="saveAppPrefs()" style="width:24px; height:24px; cursor:pointer;">
                 </div>
                 <div style="height:1px; background:rgba(255,255,255,0.05); margin-bottom:24px;"></div>
                 <div class="info-row" style="margin-bottom: 0;">
-                    <div>
-                        <div style="color:white; font-weight:700; font-size:16px;">Notifications Bureau Windows</div>
-                        <div style="color:var(--text-muted); font-size:14px; margin-top:4px;">Affiche une bulle en bas à droite de l'écran.</div>
-                    </div>
+                    <div><div style="color:white; font-weight:700; font-size:16px;">Notifications Bureau Windows</div><div style="color:var(--text-muted); font-size:14px; margin-top:4px;">Affiche une bulle en bas à droite de l'écran.</div></div>
                     <input type="checkbox" id="toggle-desktop" onchange="enableDesktopNotifs()" style="width:24px; height:24px; cursor:pointer;">
                 </div>
             </div>
@@ -295,10 +269,34 @@
         function stringToColor(str) { let h=0; for(let i=0;i<str.length;i++) h=str.charCodeAt(i)+((h<<5)-h); return `hsl(${h%360},70%,60%)`; }
         function setAvatar(el, name, url) { if(url) { el.style.backgroundImage=`url('${url}')`; el.style.backgroundColor='transparent'; el.textContent=''; } else { el.style.backgroundImage='none'; el.style.backgroundColor=stringToColor(name||'?'); el.textContent=name?name.charAt(0).toUpperCase():'?'; } }
 
+        // 📝 PARSEUR MARKDOWN (Gras, Italique, Code, Images)
+        function parseMarkdown(text) {
+            let html = text;
+            // Parse Images: ![alt](url) -> se transforme en vraie balise <img>
+            html = html.replace(/!\[.*?\]\((.+?)\)/g, '<img src="$1" class="chat-image" onclick="window.open(\'$1\', \'_blank\')" />');
+            // Gras: **texte**
+            html = html.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+            // Italique: *texte*
+            html = html.replace(/\*(.*?)\*/g, '<em>$1</em>');
+            // Code: `code`
+            html = html.replace(/`(.*?)`/g, '<code>$1</code>');
+            return html;
+        }
+
         socket.on('connect_error', (err) => {
             document.getElementById('login-error').textContent = "Le serveur dort ou est injoignable. Réessayez dans 10 sec."; 
             document.getElementById('login-error').style.display='block'; document.getElementById('login-btn').textContent = "Se connecter";
         });
+
+        window.onload = () => {
+            const savedLogin = localStorage.getItem('aurora_login');
+            const savedPass = localStorage.getItem('aurora_pass');
+            if(savedLogin && savedPass) {
+                document.getElementById('login-username').value = savedLogin;
+                document.getElementById('login-password').value = savedPass;
+                document.getElementById('login-btn').click();
+            }
+        };
 
         document.getElementById('login-btn').onclick = () => {
             const u = document.getElementById('login-username').value; const p = document.getElementById('login-password').value;
@@ -307,11 +305,19 @@
                 let timeout = setTimeout(() => { document.getElementById('login-error').textContent = "Réveil du serveur Render en cours... Recliquez."; document.getElementById('login-error').style.display='block'; document.getElementById('login-btn').textContent = "Se connecter"; }, 8000);
                 socket.emit('login', {loginName:u, password:p}, res => {
                     clearTimeout(timeout);
-                    if(res.success) { myUser=res.userData; document.getElementById('login-screen').style.display='none'; updateUI(); applyTheme(myUser.themeColor); } 
-                    else { document.getElementById('login-error').textContent=res.message; document.getElementById('login-error').style.display='block'; document.getElementById('login-btn').textContent = "Se connecter"; }
+                    if(res.success) { 
+                        myUser=res.userData; 
+                        localStorage.setItem('aurora_login', u); localStorage.setItem('aurora_pass', p);
+                        document.getElementById('login-screen').style.display='none'; updateUI(); applyTheme(myUser.themeColor); 
+                    } else { 
+                        document.getElementById('login-error').textContent=res.message; document.getElementById('login-error').style.display='block'; document.getElementById('login-btn').textContent = "Se connecter"; 
+                        localStorage.removeItem('aurora_login'); localStorage.removeItem('aurora_pass');
+                    }
                 });
             }
         };
+
+        document.getElementById('logout-btn').onclick = () => { localStorage.removeItem('aurora_login'); localStorage.removeItem('aurora_pass'); location.reload(); };
 
         socket.on('online users', users => {
             const list = document.getElementById('online-users-list'); list.innerHTML='';
@@ -331,13 +337,69 @@
             if(document.getElementById(`badge-${rID}`)) document.getElementById(`badge-${rID}`).style.display='none';
             document.getElementById('messages').innerHTML='';
             document.getElementById('chat-title').innerHTML = rID==='general' ? '🌐 # discussions' : `💬 MP avec ${targetName}`;
-            document.getElementById('start-call-btn').style.display = rID==='general' ? 'none' : 'flex';
             document.querySelectorAll('.channel-item').forEach(el => el.classList.remove('active'));
             event && event.currentTarget ? event.currentTarget.classList.add('active') : document.getElementById('btn-room-general').classList.add('active');
             socket.emit('join room', rID);
         }
 
-        document.getElementById('form').onsubmit = (e) => { e.preventDefault(); const input=document.getElementById('input'); if(input.value){ socket.emit('chat message', {room:currentRoom, text:input.value}); input.value=''; } };
+        let typingTimer;
+        document.getElementById('input').addEventListener('input', () => {
+            socket.emit('typing', currentRoom);
+            clearTimeout(typingTimer);
+            typingTimer = setTimeout(() => { socket.emit('stop typing', currentRoom); }, 2000);
+        });
+
+        let usersTyping = [];
+        const typingEl = document.getElementById('typing-indicator');
+        
+        socket.on('typing', (data) => {
+            if(data.room === currentRoom && !usersTyping.includes(data.name)) { usersTyping.push(data.name); updateTypingUI(); }
+        });
+        socket.on('stop typing', (data) => {
+            if(data.room === currentRoom) { usersTyping = usersTyping.filter(name => name !== data.name); updateTypingUI(); }
+        });
+
+        function updateTypingUI() {
+            if(usersTyping.length === 0) { typingEl.classList.remove('visible'); }
+            else if(usersTyping.length === 1) { typingEl.textContent = `${usersTyping[0]} est en train d'écrire...`; typingEl.classList.add('visible'); }
+            else { typingEl.textContent = `Plusieurs personnes écrivent...`; typingEl.classList.add('visible'); }
+        }
+
+        // ENVOI D'UN MESSAGE TEXTE
+        document.getElementById('form').onsubmit = (e) => { 
+            e.preventDefault(); 
+            const input=document.getElementById('input'); 
+            if(input.value){ 
+                socket.emit('chat message', {room:currentRoom, text:input.value}); 
+                input.value=''; 
+                socket.emit('stop typing', currentRoom);
+            } 
+        };
+
+        // 🖼️ ENVOI D'UNE IMAGE DANS LE CHAT
+        document.getElementById('chat-image-upload').onchange = async (e) => {
+            const f = e.target.files[0]; if(!f) return;
+            const fd = new FormData(); fd.append('image', f);
+            const input = document.getElementById('input');
+            input.placeholder = "Envoi de l'image en cours...";
+            
+            try {
+                const res = await fetch('https://aurora-chat-server.onrender.com/upload-image', { method: 'POST', body: fd });
+                const data = await res.json();
+                if(data.success) {
+                    // On envoie le lien sous forme de Markdown !
+                    socket.emit('chat message', { room: currentRoom, text: `![image](${data.url})` });
+                } else {
+                    alert("❌ L'image est trop grosse ou Cloudinary a bloqué l'envoi.");
+                }
+            } catch(err) { 
+                alert("❌ Erreur de connexion avec le serveur d'image."); 
+            }
+            
+            input.placeholder = "Envoyer un message...";
+            e.target.value = ''; // Réinitialise l'input
+        };
+
         socket.on('chat history', data => { if(data.room===currentRoom) { document.getElementById('messages').innerHTML=''; data.history.forEach(displayMessage); }});
         socket.on('chat message', data => { if(data.room===currentRoom) displayMessage(data.message); });
 
@@ -347,22 +409,25 @@
                     unreadCounts[data.room] = (unreadCounts[data.room]||0)+1;
                     if(document.getElementById(`badge-${data.room}`)) { document.getElementById(`badge-${data.room}`).textContent=unreadCounts[data.room]; document.getElementById(`badge-${data.room}`).style.display='block'; }
                     if(appPrefs.sound) notifSound.play().catch(()=>{});
-                    if(appPrefs.desktop && document.hidden) new Notification(`Message de ${data.authorName}`, { body: data.text });
+                    if(appPrefs.desktop && document.hidden) new Notification(`Message de ${data.authorName}`, { body: "Nouveau message" });
                 }
             }
         });
 
         function displayMessage(msg) {
             let div = document.createElement('div'); div.className='message';
-            div.innerHTML = `<div class="msg-avatar"></div><div class="msg-content"><div class="msg-header"><span class="msg-author">${msg.authorName}</span><span class="msg-time">${msg.time}</span></div><span class="msg-text">${msg.text}</span></div>`;
+            
+            // 📝 ON APPLIQUE LE MARKDOWN ICI !
+            const formattedText = parseMarkdown(msg.text);
+
+            div.innerHTML = `<div class="msg-avatar"></div><div class="msg-content"><div class="msg-header"><span class="msg-author">${msg.authorName}</span><span class="msg-time">${msg.time}</span></div><span class="msg-text">${formattedText}</span></div>`;
             setAvatar(div.querySelector('.msg-avatar'), msg.authorName, msg.avatar);
             document.getElementById('messages').appendChild(div); document.getElementById('messages').scrollTop=document.getElementById('messages').scrollHeight;
         }
 
-        function openSettings(tab) { document.getElementById('settings-screen').style.display='block'; document.querySelectorAll('.settings-content').forEach(e=>e.classList.remove('active')); document.querySelectorAll('.settings-item').forEach(e=>e.classList.remove('active')); document.getElementById(`tab-${tab}`).classList.add('active'); document.getElementById(`nav-${tab}`).classList.add('active'); }
+        function openSettings(tab) { document.getElementById('settings-screen').style.display='flex'; document.querySelectorAll('.settings-content').forEach(e=>e.classList.remove('active')); document.querySelectorAll('.settings-item').forEach(e=>e.classList.remove('active')); document.getElementById(`tab-${tab}`).classList.add('active'); document.getElementById(`nav-${tab}`).classList.add('active'); }
         function closeSettings() { document.getElementById('settings-screen').style.display='none'; }
-        document.getElementById('logout-btn').onclick = () => location.reload();
-
+        
         function updateUI() {
             document.getElementById('nav-username').textContent=myUser.displayName; setAvatar(document.getElementById('nav-avatar'), myUser.displayName, myUser.avatar);
             document.getElementById('nav-status').className = `status-dot status-${myUser.status}`; document.getElementById('status-select').value = myUser.status;
@@ -383,9 +448,12 @@
         document.getElementById('avatar-upload').onchange = async (e) => {
             const f=e.target.files[0]; if(!f) return;
             const fd = new FormData(); fd.append('avatar', f);
-            try { const res = await fetch('https://aurora-chat-server.onrender.com/upload-avatar', {method:'POST',body:fd}); const data = await res.json();
-                if(data.success) socket.emit('update profile', {avatar:data.url}, r => { if(r.success) { myUser=r.userData; updateUI(); } });
-            } catch(e){ alert("Erreur upload"); }
+            try { 
+                const res = await fetch('https://aurora-chat-server.onrender.com/upload-avatar', {method:'POST',body:fd}); 
+                const data = await res.json();
+                if(data.success) { socket.emit('update profile', {avatar:data.url}, r => { if(r.success) { myUser=r.userData; updateUI(); } }); } 
+                else { alert("❌ L'upload a échoué."); }
+            } catch(error) { alert("❌ Erreur de connexion."); }
         };
 
         function applyTheme(color) { document.documentElement.style.setProperty('--brand-experiment', color); }
