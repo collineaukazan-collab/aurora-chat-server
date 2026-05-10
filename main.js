@@ -11,31 +11,31 @@ function createWindow () {
     }
   });
 
-  // Charge ton serveur distant
   mainWindow.loadURL('https://aurora-chat-server.onrender.com');
 
-  // 🔓 AUTORISATIONS OBLIGATOIRES POUR WEBRTC (MICRO, CAMÉRA, ÉCRAN)
+  // 🔓 AUTORISATIONS WEBRTC (Micro & Caméra)
   session.defaultSession.setPermissionRequestHandler((webContents, permission, callback) => {
     const allowedPermissions = ['media', 'mediaKeySystem', 'desktopCapture'];
-    if (allowedPermissions.includes(permission)) {
-      callback(true); // Autorise la caméra, le micro et l'écran
-    } else {
-      callback(false);
-    }
+    if (allowedPermissions.includes(permission)) callback(true);
+    else callback(false);
   });
 
-  // Cache le menu du haut par défaut
+  // 🖥️ NOUVEAU : AUTORISATION SPÉCIALE POUR LE PARTAGE D'ÉCRAN
+  session.defaultSession.setDisplayMediaRequestHandler((request, callback) => {
+    desktopCapturer.getSources({ types: ['screen'] }).then((sources) => {
+      // On capture l'écran principal automatiquement
+      callback({ video: sources[0], audio: 'loopback' });
+    }).catch(err => {
+      console.log('Erreur capture écran:', err);
+    });
+  });
+
   mainWindow.setMenuBarVisibility(false);
 }
 
 app.whenReady().then(() => {
   createWindow();
-
-  app.on('activate', function () {
-    if (BrowserWindow.getAllWindows().length === 0) createWindow();
-  });
+  app.on('activate', function () { if (BrowserWindow.getAllWindows().length === 0) createWindow(); });
 });
 
-app.on('window-all-closed', function () {
-  if (process.platform !== 'darwin') app.quit();
-});
+app.on('window-all-closed', function () { if (process.platform !== 'darwin') app.quit(); });
