@@ -1,36 +1,41 @@
-const { app, BrowserWindow } = require('electron');
-const { autoUpdater } = require('electron-updater');
+const { app, BrowserWindow, session, desktopCapturer } = require('electron');
 const path = require('path');
 
-let mainWindow;
-
-function createWindow() {
-  mainWindow = new BrowserWindow({
+function createWindow () {
+  const mainWindow = new BrowserWindow({
     width: 1200,
     height: 800,
-    minWidth: 800,
-    minHeight: 600,
-    autoHideMenuBar: true, // Cache le menu Windows moche
-    icon: path.join(__dirname, 'icon.png'), // 🌟 CHARGE TON LOGO HD ICI
     webPreferences: {
-      nodeIntegration: true
+      nodeIntegration: true,
+      contextIsolation: false
     }
   });
 
+  // Charge ton serveur distant
   mainWindow.loadURL('https://aurora-chat-server.onrender.com');
-  autoUpdater.checkForUpdatesAndNotify();
+
+  // 🔓 AUTORISATIONS OBLIGATOIRES POUR WEBRTC (MICRO, CAMÉRA, ÉCRAN)
+  session.defaultSession.setPermissionRequestHandler((webContents, permission, callback) => {
+    const allowedPermissions = ['media', 'mediaKeySystem', 'desktopCapture'];
+    if (allowedPermissions.includes(permission)) {
+      callback(true); // Autorise la caméra, le micro et l'écran
+    } else {
+      callback(false);
+    }
+  });
+
+  // Cache le menu du haut par défaut
+  mainWindow.setMenuBarVisibility(false);
 }
 
-app.whenReady().then(createWindow);
+app.whenReady().then(() => {
+  createWindow();
 
-app.on('window-all-closed', () => {
+  app.on('activate', function () {
+    if (BrowserWindow.getAllWindows().length === 0) createWindow();
+  });
+});
+
+app.on('window-all-closed', function () {
   if (process.platform !== 'darwin') app.quit();
-});
-
-app.on('activate', () => {
-  if (BrowserWindow.getAllWindows().length === 0) createWindow();
-});
-
-autoUpdater.on('update-downloaded', () => {
-  autoUpdater.quitAndInstall();
 });
